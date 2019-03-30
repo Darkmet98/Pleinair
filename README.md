@@ -1,4 +1,4 @@
-![Carto-chan](https://raw.githubusercontent.com/Darkmet98/Pleinair/master/Logo.png)
+![Pleinair](https://github.com/Darkmet98/Pleinair/blob/master/Logo.png?raw=true)
 # Pleinair
 A disgaea translation toolkit.
 
