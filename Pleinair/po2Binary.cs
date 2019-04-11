@@ -31,11 +31,11 @@ namespace Pleinair
         private string Replaced { get; set; }
         private int size { get; set; }
         private Binary2Po BP { get; set; } 
-        public string Original { get; set; }
         private uint LOCALE_SYSTEM_DEFAULT => 0x0800;
         private uint LCMAP_FULLWIDTH => 0x00800000;
         public ArrayList HeaderBlocks { get; set; }
         public ArrayList Blocks { get; set; }
+        public DataReader OriginalFile { get; set; }
         public po2BinaryBIN()
         {
             size = 0;
@@ -58,18 +58,26 @@ namespace Pleinair
             var writer = new DataWriter(binary.Stream);
 
             //Get the full header from the original file
-            GetOriginalHeader(Original);
+            GetOriginalHeader();
 
             //Write the full header
             WriteHeader(writer);
-            
+
             //Generate the array blocks
-            foreach (var entry in source.Entries)
+            for (int i = 0; i < BP.Count; i++)
             {
-                Replaced = string.IsNullOrEmpty(entry.Translated) ?
-                    entry.Original : entry.Translated;
-                Replaced = BP.ReplaceText(Replaced, false);
-                GenerateBlock(Replaced);
+                int poEntry = GetPOEntry(source, i);
+                if (poEntry != -1)
+                {
+                    Replaced = string.IsNullOrEmpty(source.Entries[poEntry].Translated) ?
+                    source.Entries[poEntry].Original : source.Entries[poEntry].Translated;
+                    Replaced = BP.ReplaceText(Replaced, false);
+                    GenerateBlock(source.Entries[poEntry].Reference + Replaced);
+                }
+                else
+                {
+                    GetBlock(i);
+                }
             }
 
             writer.Stream.Position = 0x08;
@@ -94,11 +102,16 @@ namespace Pleinair
             return new BinaryFormat(binary.Stream);
         }
 
+        private void GetBlock(int blocknumber)
+        {
+            OriginalFile.Stream.Position = BP.Positions[blocknumber];
+            byte[] block = OriginalFile.ReadBytes(BP.Sizes[blocknumber]);
+            Blocks.Add(block);
+        }
+
         private void GenerateBlock (String line)
         {
             List<byte> block = new List<byte>();
-            bool istext = false;
-
             char[] array = line.ToCharArray();
 
             for (int i = 0; i < array.Length; i++)
@@ -116,22 +129,15 @@ namespace Pleinair
                         {
                             //{01}
                             block.Add(1);
-                            istext = true;
-                            //Skip the START]\n
-                            i += 7;
+                            //Skip the START]
+                            i += 6;
                         }
-                        break;
-                    case '\n':
-                        if(istext)
+                        else if (array[i + 1] == 'E')
                         {
-                            if (array[i + 1] == '[' && array[i + 2] == 'E')
-                            {
-                                //{03}
-                                block.Add(3);
-                                istext = false;
-                                //Skip the END]\n
-                                i += 5;
-                            }
+                            //{03}
+                            block.Add(3);
+                            //Skip the END]
+                            i += 4;
                         }
                         break;
                     default:
@@ -139,7 +145,6 @@ namespace Pleinair
                         byte[] toSJIS = BP.SJIS.GetBytes(chara);
                         block.Add(toSJIS[0]);
                         block.Add(toSJIS[1]);
-
                         break;
                 }
             }
@@ -166,26 +171,43 @@ namespace Pleinair
             }
         }
 
-        private void GetOriginalHeader(String source)
+        private void GetOriginalHeader()
         {
-            var reader = new DataReader(new DataStream(source, FileOpenMode.Read))
-            {
-                DefaultEncoding = new UTF8Encoding(),
-                Endianness = EndiannessMode.LittleEndian,
-            };
-
             //Read the number of blocks on the file
-            BP.Count = reader.ReadInt32();
+            BP.Count = OriginalFile.ReadInt32();
 
             //Jump to the first block
-            reader.Stream.Position = 0x08;
+            OriginalFile.Stream.Position = 0x08;
             
-            //Dumping the blocks
+            
             for (int i = 0; i < BP.Count; i++)
             {
-                HeaderBlocks.Add(reader.ReadBytes(0x20));
+                //Get positions
+                BP.Positions.Add(OriginalFile.ReadInt32() + 0xBE08);
+                OriginalFile.Stream.Position -= 4;
+                //Dumping the blocks
+                HeaderBlocks.Add(OriginalFile.ReadBytes(0x20));
             }
+            //Get Sizes
+            BP.GetSizes(OriginalFile);
         }
+
+
+        //Get the block number from the po for get the string
+        private int GetPOEntry(Po po, int i)
+        {
+            int poEntry = 0;
+            foreach (var entry in po.Entries)
+            {
+                if (i.ToString() == entry.Context)
+                {
+                    return poEntry;
+                }
+                poEntry++;
+            }
+            return -1;
+        }
+
         //https://stackoverflow.com/questions/6434377/converting-zenkaku-characters-to-hankaku-and-vice-versa-in-c-sharp
         //This is very usefull
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]

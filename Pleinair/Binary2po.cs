@@ -31,16 +31,14 @@ namespace Pleinair
         public bool DictionaryEnabled { get; set; }
         public Dictionary<byte, string> Characters { get; set; }
         public List<string> Text { get; set; }
+        public List<string> HeaderText { get; set; }
         public List<int> Positions { get; set; }
         public List<String> TextPosition { get; set; }
         public List<int> Sizes { get; set; }
         public Encoding SJIS => Encoding.GetEncoding("shift_jis");
         private Dictionary<string, string> Map { get; set; }
-
-
-        //prueba
-        public int PosicionTexto { get; set; }
         public string Texto { get; set; }
+        private string SplitHeader { get; set; }
         public Binary2Po()
         {
             DictionaryEnabled = false;
@@ -48,6 +46,7 @@ namespace Pleinair
             Characters = new Dictionary<byte, string>();
             Positions = new List<int>();
             Text = new List<string>();
+            HeaderText = new List<string>();
             Sizes = new List<int>();
             TextPosition = new List<String>();
         }
@@ -57,10 +56,7 @@ namespace Pleinair
         {
             Po po = new Po
             {
-                Header = new PoHeader("Disgaea", "hypertradus@gmail.es", "es")
-                {
-                    LanguageTeam = "Hypertraducciones",
-                }
+                Header = new PoHeader("Disgaea", "dummy@dummy.com", "en-US")
             };
 
             var reader = new DataReader(source.Stream)
@@ -98,13 +94,16 @@ namespace Pleinair
                 string result = Text[i];
                 if (string.IsNullOrEmpty(result))
                     result = "<!empty>";
+                if (result.IndexOf("[START]") != -1)
+                {
+                    if (DictionaryEnabled) result = ReplaceText(result, true); //Reemplace the strings with the preloaded dictionary
 
-                if (DictionaryEnabled) result = ReplaceText(result, true); //Reemplace the strings with the preloaded dictionary
-
-                entry.Original = result;  //Add the string block
-                entry.Context = i.ToString(); //Context
-                if (result.IndexOf("[START]") == -1) entry.Translated = result; //Temporal
-                po.Add(entry);
+                    entry.Original = result;  //Add the string block
+                    entry.Context = i.ToString(); //Context
+                    if (HeaderText[i] != "") entry.Reference = HeaderText[i];
+                    po.Add(entry);
+                }
+                
             }
 
             return po;
@@ -121,7 +120,7 @@ namespace Pleinair
             return result;
         }
 
-        private List<int> GetBlocks(DataReader reader)
+        public List<int> GetBlocks(DataReader reader)
         {
             List<int> Positions = new List<int>();
             for (int i = 0; i < Count; i++)
@@ -132,7 +131,7 @@ namespace Pleinair
             return Positions;
         }
 
-        private void GetSizes(DataReader reader)
+        public void GetSizes(DataReader reader)
         {
             for (int i = 0; i < Positions.Count; i++)
             {
@@ -158,7 +157,9 @@ namespace Pleinair
             var sb = new StringBuilder();
             bool istext = false;
             bool isbytes = false;
-            Byte bytes = 0;
+            bool Header = true;
+            SplitHeader = "";
+            Byte bytes;
             Texto = "";
             for (int i = 0; i < ActualSize; i++)
             {
@@ -179,7 +180,7 @@ namespace Pleinair
                             break;
                         case 0x03:
                             istext = false;
-                            Texto += "\n[END]\n";
+                            Texto += "[END]";
                             break;
                         case 0x81:
                             if (!isbytes)
@@ -220,25 +221,37 @@ namespace Pleinair
                             {
                                 istext = true;
                                 isbytes = false;
-                                Texto += "\n[START]\n";
+                                Header = false;
+                                Texto += "[START]";
                                 reader.Stream.Position = reader.Stream.Position - 1;
                             }
                             else
                             {
-                                Texto += "{" + "01" + "}";
+                                if (Header) SplitHeader += "{" + "01" + "}";
+                                else Texto += "{" + "01" + "}";
                                 reader.Stream.Position = reader.Stream.Position - 1;
                             }
                             break;
                         default:
-                            Texto += sb.Append($"{{{bytes:X2}") + "}";
+                            if (Header) SplitHeader += sb.Append($"{{{bytes:X2}") + "}";
+                            else Texto += sb.Append($"{{{bytes:X2}") + "}";
                             break;
                     }
                 }
-
                 sb = sb.Clear();
             }
-            Text.Add(Texto);
-            Texto = "";
+
+
+            if (Texto == "")
+            {
+                HeaderText.Add("NULL");
+                Text.Add(SplitHeader);
+            }
+            else
+            {
+                HeaderText.Add(SplitHeader);
+                Text.Add(Texto);
+            }
         }
         private string NormalizeText(DataReader reader)
         {

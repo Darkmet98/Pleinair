@@ -17,8 +17,10 @@
 //
 using System;
 using System.IO;
+using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.FileSystem;
+using Yarhl.IO;
 using Yarhl.Media.Text;
 
 namespace Pleinair
@@ -53,7 +55,7 @@ namespace Pleinair
                         Console.WriteLine("Exporting " + args[1] + "...");
 
                         string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
                     }
                     break;
                 case "-import":
@@ -66,14 +68,18 @@ namespace Pleinair
                         // 2
                         po2BinaryBIN P2B = new po2BinaryBIN
                         {
-                            Original = args[2]
+                            OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                            {
+                                DefaultEncoding = new UTF8Encoding(),
+                                Endianness = EndiannessMode.LittleEndian,
+                            }
                         };
 
                         nodo.Transform<Po2Binary, BinaryFormat, Po>();
                         Node nodoDat = nodo.Transform<Po, BinaryFormat>(P2B);
                         //3
                         Console.WriteLine("Importing " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 3);
+                        string file = args[1].Remove(args[1].Length - 4);
                         nodoDat.Stream.WriteTo(file + "_new.DAT");
                     }
                     break;
