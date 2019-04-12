@@ -48,7 +48,7 @@ namespace Pleinair
                         Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
 
                         // 2
-                        Binary2Po converter = new Binary2Po { };
+                        DAT.Binary2Po converter = new DAT.Binary2Po { };
 
                         Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
                         //3
@@ -66,7 +66,7 @@ namespace Pleinair
                         Node nodo = NodeFactory.FromFile(args[1]); // Po
 
                         // 2
-                        po2BinaryBIN P2B = new po2BinaryBIN
+                        DAT.po2BinaryBIN P2B = new DAT.po2BinaryBIN
                         {
                             OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
                             {
@@ -81,6 +81,23 @@ namespace Pleinair
                         Console.WriteLine("Importing " + args[1] + "...");
                         string file = args[1].Remove(args[1].Length - 4);
                         nodoDat.Stream.WriteTo(file + "_new.DAT");
+                    }
+                    break;
+                case "-export_exe":
+                    if (File.Exists(args[1]))
+                    {
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
+
+                        // 2
+                        ELF.Binary2Po converter = new ELF.Binary2Po { };
+
+                        Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
+                        //3
+                        Console.WriteLine("Exporting " + args[1] + "...");
+
+                        string file = args[1].Remove(args[1].Length - 4);
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
                     }
                     break;
             }

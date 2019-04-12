@@ -67,8 +67,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Binary2po.cs" />
-    <Compile Include="po2Binary.cs" />
+    <Compile Include="DAT\Binary2po.cs" />
+    <Compile Include="DAT\po2Binary.cs" />
+    <Compile Include="ELF\Binary2po.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

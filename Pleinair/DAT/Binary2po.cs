@@ -23,7 +23,7 @@ using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
 
-namespace Pleinair
+namespace Pleinair.DAT
 {
     public class Binary2Po : IConverter<BinaryFormat, Po>
     {
