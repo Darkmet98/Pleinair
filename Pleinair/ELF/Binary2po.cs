@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
@@ -12,9 +10,13 @@ namespace Pleinair.ELF
     public class Binary2Po : IConverter<BinaryFormat, Po>
     {
         private DAT.Binary2Po BP_Dat { get; set; }
-
+        private List<ushort> Text { get; set; }
+        private int SizeBlock { get; set; }
+        private string TextNormalized { get; set; }
+        private int Count { get; set; }
         public Binary2Po()
         {
+            Text = new List<ushort>();
             BP_Dat = new DAT.Binary2Po();
         }
 
@@ -31,31 +33,73 @@ namespace Pleinair.ELF
                 Endianness = EndiannessMode.LittleEndian,
             };
 
-            //Se va a la primera posicion del juego donde contiene texto
-            reader.Stream.Position = 0x151FFC;
+            //Go to the first block where the executable contains text
+            reader.Stream.Position = 0x151FFC; //Block 1
+            SizeBlock = 0x45E; //Size Block 1
+            DumpBlock(reader, po);
 
-            for(int i = 0; i < 0x8C4; i++)
-            {
-                //Incomplete
-                BP_Dat.Positions.Add(reader.ReadInt32());
-            }
+            //Go to the second block
+            reader.Stream.Position = 0x153194; //Block 2
+            SizeBlock = 0x45C; //Block 2
+            DumpBlock(reader, po);
 
-            for (int i = 0; i < BP_Dat.Positions.Count; i++)
+            return po;
+        }
+
+        private void DumpBlock(DataReader reader, Po po)
+        {
+            for (int i = 0; i < SizeBlock; i++)
             {
                 PoEntry entry = new PoEntry(); //Generate the entry on the po file
-                reader.Stream.Position = BP_Dat.Positions[i];
 
-                byte[] arraysjis = BitConverter.GetBytes(BP_Dat.Sizes[i]);
-                string result = BP_Dat.SJIS.GetString(arraysjis);
-                result = result.Normalize(NormalizationForm.FormKC);
+                //Get position
+                int posicion = reader.ReadInt32() - 0x401600;
+                reader.Stream.PushToPosition(posicion);
 
-                Console.WriteLine(result);
+                //Get the text
+                DumpText(reader);
 
-                entry.Original = result;  //Add the string block
-                entry.Context = i.ToString(); //Context
+                //Normalize the text
+                NormalizeText();
+
+                //Return to the original position
+                reader.Stream.PopPosition();
+
+                entry.Original = TextNormalized;  //Add the string block
+                entry.Context = Count.ToString(); //Context
+                Count++;
                 po.Add(entry);
+
+                //Clear the text
+                TextNormalized = "";
             }
-            return po;
+        }
+
+        private void DumpText(DataReader reader)
+        {
+            ushort textReaded;
+            do
+            {
+                textReaded = reader.ReadUInt16();
+                Text.Add(textReaded);
+            }
+            while (textReaded != 00);
+        }
+
+        private void NormalizeText()
+        {
+            for (int i = 0; i < Text.Count; i++)
+            {
+                byte[] arraysjis = BitConverter.GetBytes(Text[i]);
+                string temp = BP_Dat.SJIS.GetString(arraysjis);
+                TextNormalized += temp.Normalize(NormalizationForm.FormKC);
+            }
+            //Delete the /0/0
+            TextNormalized = TextNormalized.Remove(TextNormalized.Length - 2);
+            //Add text to the empty string
+            if (string.IsNullOrEmpty(TextNormalized))
+                TextNormalized = "<!empty>";
+            Text.Clear();
         }
     }
 }

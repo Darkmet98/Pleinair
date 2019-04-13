@@ -34,9 +34,12 @@ namespace Pleinair
             Console.WriteLine("This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
-                Console.WriteLine("\nUsage: Pleinar.exe <-export/-import>");
+                Console.WriteLine("\nUsage: Pleinar.exe <-export/-import/-export_elf>");
+                Console.WriteLine("\nTALK.DAT");
                 Console.WriteLine("Export TALK.DAT to Po: Pleinair.exe -export \"TALK.DAT\"");
                 Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import \"TALK.po\" \"TALK.DAT\"");
+                Console.WriteLine("\nExecutable");
+                Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair.exe -export_elf \"dis1_st.exe\"");
                 return;
             }
             switch (args[0])
@@ -83,7 +86,7 @@ namespace Pleinair
                         nodoDat.Stream.WriteTo(file + "_new.DAT");
                     }
                     break;
-                case "-export_exe":
+                case "-export_elf":
                     if (File.Exists(args[1]))
                     {
                         // 1
