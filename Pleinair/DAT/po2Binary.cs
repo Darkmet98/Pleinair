@@ -125,19 +125,26 @@ namespace Pleinair.DAT
                         i += 3;
                         break;
                     case '[':
-                        if (array[i + 1] == 'S')
+                        if (array[i + 1] == 'S' && array[i + 2] == 'T' && array[i + 6] == 'S')
                         {
                             //{01}
                             block.Add(1);
                             //Skip the START]
                             i += 6;
                         }
-                        else if (array[i + 1] == 'E')
+                        else if (array[i + 1] == 'E' && array[i + 2] == 'N' && array[i + 3] == 'D' && array[i + 4] == ']')
                         {
                             //{03}
                             block.Add(3);
                             //Skip the END]
                             i += 4;
+                        }
+                        else
+                        {
+                            String charax = ToFullWidth(array[i].ToString());
+                            byte[] toSJISx = BP.SJIS.GetBytes(charax);
+                            block.Add(toSJISx[0]);
+                            block.Add(toSJISx[1]);
                         }
                         break;
                     default:
