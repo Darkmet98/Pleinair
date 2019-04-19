@@ -25,11 +25,11 @@ using Yarhl.Media.Text;
 using System.Runtime.InteropServices;
 namespace Pleinair.ELF
 {
-    class po2BinaryBIN : IConverter<Po, BinaryFormat>
+    class po2Binary : IConverter<Po, BinaryFormat>
     {
         private DAT.po2Binary PB { get; set; }
         private Binary2Po BP { get; set; }
-
+        public DataReader OriginalFile { get; set; }
         public po2Binary()
         {
             PB = new DAT.po2Binary();
@@ -65,6 +65,11 @@ namespace Pleinair.ELF
         {
             writer.Stream.Position = 0x144670;
             for (int i = 0; i < 0xD984; i++) writer.Write(0);
+        }
+
+        private void InsertText()
+        {
+
         }
 
     }
