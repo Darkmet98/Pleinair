@@ -26,17 +26,17 @@ using System.Runtime.InteropServices;
 
 namespace Pleinair.DAT
 {
-    class po2BinaryBIN : IConverter<Po, BinaryFormat>
+    class po2Binary : IConverter<Po, BinaryFormat>
     {
         private string Replaced { get; set; }
         private int size { get; set; }
-        private Binary2Po BP { get; set; } 
+        public Binary2Po BP { get; set; } 
         private uint LOCALE_SYSTEM_DEFAULT => 0x0800;
         private uint LCMAP_FULLWIDTH => 0x00800000;
         public ArrayList HeaderBlocks { get; set; }
         public ArrayList Blocks { get; set; }
         public DataReader OriginalFile { get; set; }
-        public po2BinaryBIN()
+        public po2Binary()
         {
             size = 0;
             BP = new Binary2Po();

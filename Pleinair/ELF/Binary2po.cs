@@ -11,7 +11,7 @@ namespace Pleinair.ELF
     {
         private DAT.Binary2Po BP_Dat { get; set; }
         private List<ushort> Text { get; set; }
-        private int SizeBlock { get; set; }
+        public int SizeBlock { get; set; }
         private string TextNormalized { get; set; }
         private int Count { get; set; }
         public Binary2Po()
