@@ -48,14 +48,15 @@ namespace Pleinair.ELF
             //Generate the exported file
             BinaryFormat binary = new BinaryFormat();
             var writer = new DataWriter(binary.Stream);
+            OriginalFile.Stream.BaseStream.CopyTo(writer.Stream.BaseStream);
 
             //Clear the block
             ClearBlock(writer);
 
             //Go to the first block
-            writer.Stream.Position = 0x151FFC; //Block 1
-            BP.SizeBlock = 0x45E; //Size Block 1
-
+            //writer.Stream.Position = 0x151FFC; //Block 1
+            //BP.SizeBlock = 0x45E; //Size Block 1
+            InsertText(writer, source);
 
 
             return new BinaryFormat(binary.Stream);
@@ -67,10 +68,65 @@ namespace Pleinair.ELF
             for (int i = 0; i < 0xD984; i++) writer.Write(0);
         }
 
-        private void InsertText()
+        private void InsertText(DataWriter writer, Po source)
         {
 
-        }
+            long position = 0x144674;
+            int positiontext;
+            writer.Stream.Position = 0x144670;
+            writer.Write("JP");
+            writer.Stream.Position = 0x151FFC;
 
+            for (int i = 0; i < 0x8BA; i++)
+            {
+                //Go to the next block
+                if (i == 0x45F) writer.Stream.Position = 0x153194;
+
+
+                if (BP.JapaneseStrings.Contains(i)) writer.Write(0x144670 + 0x401600);
+                else if (BP.BadPointers.Contains(i)) writer.Stream.Position += 4;
+                else {
+                    //Go to the string block zone
+                    writer.Stream.PushToPosition(position);
+
+                    //Check if the translation exists
+                    string Replaced = string.IsNullOrEmpty(source.Entries[i].Translated) ?
+                        source.Entries[i].Original : source.Entries[i].Translated;
+
+                    byte[] encoded = PB.BP.SJIS.GetBytes(Replaced);
+
+
+                    if(encoded.Length%2 == 0) writer.Write(encoded + "\0\0\0\0");
+                    else
+                    {
+                        int stringlength = System.Convert.ToInt32(encoded.Length.ToString().Substring(1));
+                        Console.WriteLine(i);
+                        switch(stringlength)
+                        {
+                            case 5:
+                            case 9:
+                                writer.Write(Replaced + "\0\0\0");
+                                break;
+
+                            case 0:
+                            case 2:
+                            case 6:
+                                writer.Write(Replaced + "\0\0");
+                                break;
+                            case 1:
+                            case 3:
+                            case 7:
+                                writer.Write(Replaced + "\0");
+                                break;
+                        }
+
+                    }
+                    positiontext = (int)position;
+                    position = writer.Stream.Position;
+                    writer.Stream.PopPosition();
+                    writer.Write(positiontext+0x401600);
+                }
+            }
+        }
     }
 }

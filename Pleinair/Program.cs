@@ -104,7 +104,7 @@ namespace Pleinair
                     }
                     break;
                 case "-import_elf":
-                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    if (File.Exists(args[1]))
                     {
 
                         // 1

@@ -9,7 +9,7 @@ namespace Pleinair.ELF
 {
     public class Binary2Po : IConverter<BinaryFormat, Po>
     {
-        private DAT.Binary2Po BP_Dat { get; set; }
+        public DAT.Binary2Po BP_Dat { get; set; }
         private List<ushort> Text { get; set; }
         public int SizeBlock { get; set; }
         private string TextNormalized { get; set; }
@@ -55,8 +55,8 @@ namespace Pleinair.ELF
                     PoEntry entry = new PoEntry(); //Generate the entry on the po file
 
                     //Get position
-                    int posicion = reader.ReadInt32() - 0x401600;
-                    reader.Stream.PushToPosition(posicion);
+                    int position = reader.ReadInt32() - 0x401600;
+                    reader.Stream.PushToPosition(position);
 
                     //Get the text
                     DumpText(reader);
@@ -67,7 +67,8 @@ namespace Pleinair.ELF
                     //Return to the original position
                     reader.Stream.PopPosition();
 
-                    entry.Original = ReplaceText(TextNormalized, true);  //Add the string block
+                    //entry.Original = ReplaceText(TextNormalized, true);  //Add the string block
+                    entry.Original = TextNormalized.Replace("\0", "");
                     entry.Context = Count.ToString(); //Context
                     po.Add(entry);
 
@@ -86,12 +87,19 @@ namespace Pleinair.ELF
         private void DumpText(DataReader reader)
         {
             ushort textReaded;
+            byte check;
             do
             {
-                textReaded = reader.ReadUInt16();
-                Text.Add(textReaded);
+                //Fix the import process because the executable contains bad spaces on the strings
+                check = reader.ReadByte();
+                if (check == 0x80 || check == 0x81 || check == 0x82 || check == 0x83 || check == 0x87) {
+                    reader.Stream.Position -= 1;
+                    textReaded = reader.ReadUInt16();
+                    Text.Add(textReaded);
+                }
+                else Text.Add(check);
             }
-            while (textReaded != 00);
+            while (check != 00);
         }
 
         private void NormalizeText()
@@ -113,7 +121,7 @@ namespace Pleinair.ELF
         //Dictionaries
 
         //Japanese strings
-        private List<int> JapaneseStrings = new List<int>()
+        public List<int> JapaneseStrings = new List<int>()
         {
             11, 12, 13, 201, 300, 326, 327, 407, 408, 409, 410, 411, 412, 413,
             414, 415, 416, 919, 920, 921, 922, 923, 924, 925, 926, 927, 928, 929,
@@ -186,30 +194,42 @@ namespace Pleinair.ELF
 
 
         //Bad pointers
-        private List<int> BadPointers = new List<int>()
+        public List<int> BadPointers = new List<int>()
         {
-            35, 45, 78, 106, 307, 417, 499, 502, 516, 737, 751, 859,
+            35, 45, 78, 106, 307, 417, 467, 499, 502, 516, 622, 662, 737, 751, 859,
             860, 864, 868, 891, 909, 1116, 1117, 1153, 1163, 1196,
             1224, 1425, 1535, 1585, 1617, 1620, 1634, 1740, 1780,
             1855, 1869, 1977, 1978, 2027
         };
 
         //Variables
-        private Dictionary<string, string> Variables = new Dictionary<string, string>()
+        /*private Dictionary<string, string> Variables = new Dictionary<string, string>()
         {
-            {"%s", "{25}{73}"},
-            {"%d", "{25}{64}"},
-            {"%2d", "{25}{32}{64}"},
-            {"%3d", "{25}{33}{64}"},
-            {"%4d", "{25}{34}{64}"},
-            {"%7d", "{25}{37}{64}"},
-            {"%02d", "{25}{30}{32}{64}"},
-            {"%03d", "{25}{30}{33}{64}"},
-            {"%04d", "{25}{30}{34}{64}"},
-            {"@", "{40}"}
-        };
+            {"%\0s\0", "{25}{73}"},
+            {"%\0d\0", "{25}{64}"},
+            {"0\0x\0%\0x\0", "{30}{78}{25}{78}"},
+            {"%\02\0d\0", "{25}{32}{64}"},
+            {"%\03\0d\0", "{25}{33}{64}"},
+            {"%\04\0d\0", "{25}{34}{64}"},
+            {"%\07\0d\0", "{25}{37}{64}"},
+            {"%\00\02\0d\0", "{25}{30}{32}{64}"},
+            {"%\00\03\0d\0", "{25}{30}{33}{64}"},
+            {"%\00\04\0d\0", "{25}{30}{34}{64}"},
+            {"@", "{40}"},
+            {".\0", "{2E}"},
+            {"L\01\0", "{4C}{31}"},
+            {"R\01\0", "{52}{31}"},
+            {"?N\0", "{87}{4E}"},
+            {"?O\0", "{87}{4F}"},
+            {"?P\0", "{87}{50}"},
+            {"?Q\0", "{87}{51}"},
+            {"?R\0", "{87}{52}"},
+            {"?S\0", "{87}{53}"},
+            {"?T\0", "{87}{54}"},
+            {"?U\0", "{87}{55}"}
+        };*/
 
-        public String ReplaceText(string line, bool export)
+        /*public String ReplaceText(string line, bool export)
         {
             string result = line;
             foreach (var replace in Variables)
@@ -218,6 +238,6 @@ namespace Pleinair.ELF
                 else result = result.Replace(replace.Value, replace.Key);
             }
             return result;
-        }
+        }*/
     }
 }
