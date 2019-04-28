@@ -16,13 +16,10 @@
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
-using System.Runtime.InteropServices;
 namespace Pleinair.ELF
 {
     class po2Binary : IConverter<Po, BinaryFormat>
@@ -48,24 +45,15 @@ namespace Pleinair.ELF
             //Generate the exported file
             BinaryFormat binary = new BinaryFormat();
             var writer = new DataWriter(binary.Stream);
-            OriginalFile.Stream.BaseStream.CopyTo(writer.Stream.BaseStream);
 
-            //Clear the block
-            ClearBlock(writer);
+            //Dump the original executable to the stream
+            for (int i = 0; i < OriginalFile.Stream.Length; i++) writer.Write(OriginalFile.ReadByte());
 
             //Go to the first block
-            //writer.Stream.Position = 0x151FFC; //Block 1
-            //BP.SizeBlock = 0x45E; //Size Block 1
             InsertText(writer, source);
 
 
             return new BinaryFormat(binary.Stream);
-        }
-
-        private void ClearBlock(DataWriter writer)
-        {
-            writer.Stream.Position = 0x144670;
-            for (int i = 0; i < 0xD984; i++) writer.Write(0);
         }
 
         private void InsertText(DataWriter writer, Po source)
@@ -83,43 +71,34 @@ namespace Pleinair.ELF
                 if (i == 0x45F) writer.Stream.Position = 0x153194;
 
 
-                if (BP.JapaneseStrings.Contains(i)) writer.Write(0x144670 + 0x401600);
-                else if (BP.BadPointers.Contains(i)) writer.Stream.Position += 4;
+                if (BP.JapaneseStrings.Contains(i)) writer.Write((0x144670 + 0x401600)); //Japanese string
+                else if (BP.BadPointers.Contains(i)) writer.Stream.Position += 4; //Bad pointer
                 else {
                     //Go to the string block zone
                     writer.Stream.PushToPosition(position);
 
                     //Check if the translation exists
-                    string Replaced = string.IsNullOrEmpty(source.Entries[i].Translated) ?
-                        source.Entries[i].Original : source.Entries[i].Translated;
+                    string Replaced = GetEntry(source, i);
 
-                    byte[] encoded = PB.BP.SJIS.GetBytes(Replaced);
+                    //Obtain the array of bytes
+                    byte[] encoded = GetArrayBytes(Replaced);
 
 
-                    if(encoded.Length%2 == 0) writer.Write(encoded + "\0\0\0\0");
+                    if (encoded.Length % 4 == 0)
+                    {
+                        writer.Write(encoded);
+                        writer.Write((long)0x0);
+                    }
                     else
                     {
-                        int stringlength = System.Convert.ToInt32(encoded.Length.ToString().Substring(1));
-                        Console.WriteLine(i);
-                        switch(stringlength)
+                        writer.Write(encoded);
+                        int tempo = encoded.Length;
+                        do
                         {
-                            case 5:
-                            case 9:
-                                writer.Write(Replaced + "\0\0\0");
-                                break;
-
-                            case 0:
-                            case 2:
-                            case 6:
-                                writer.Write(Replaced + "\0\0");
-                                break;
-                            case 1:
-                            case 3:
-                            case 7:
-                                writer.Write(Replaced + "\0");
-                                break;
+                            writer.Write((byte)0x0);
+                            tempo++;
                         }
-
+                        while (tempo % 4 != 0);
                     }
                     positiontext = (int)position;
                     position = writer.Stream.Position;
@@ -128,5 +107,44 @@ namespace Pleinair.ELF
                 }
             }
         }
+
+        private string GetEntry(Po source, int value)
+        {
+            foreach (var text in source.Entries)
+            {
+                if (value.ToString() == text.Context)
+                {
+                    string Replaced = string.IsNullOrEmpty(text.Translated) ?
+                        text.Original : text.Translated;
+                    if (BP.BP_Dat.DictionaryEnabled) Replaced = BP.BP_Dat.ReplaceText(Replaced, false);
+                    return Replaced;
+                }
+            }
+            return null;
+        }
+
+        private byte[] GetArrayBytes(string text)
+        {
+            List<Byte> result = new List<byte>();
+
+            foreach(var chara in text.ToCharArray())
+            {
+                if (FullWidthCharacters.TryGetValue(chara, out ushort value)) result.AddRange(BitConverter.GetBytes(value));
+                else {
+                    byte[] stringtext = PB.BP.SJIS.GetBytes(new char[] { chara });
+                    result.AddRange(stringtext);
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private Dictionary<char, ushort> FullWidthCharacters = new Dictionary<char, ushort>()
+        {
+            {'△', 0xA281},
+            {'×', 0x7E81},
+            {'○', 0x9B81},
+            {'□', 0xA081}
+        };
     }
 }
