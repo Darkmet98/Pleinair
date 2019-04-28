@@ -47,7 +47,7 @@ namespace Pleinair.ELF
             var writer = new DataWriter(binary.Stream);
 
             //Dump the original executable to the stream
-            for (int i = 0; i < OriginalFile.Stream.Length; i++) writer.Write(OriginalFile.ReadByte());
+            OriginalFile.Stream.WriteTo(writer.Stream);
 
             //Go to the first block
             InsertText(writer, source);
@@ -116,7 +116,8 @@ namespace Pleinair.ELF
                 {
                     string Replaced = string.IsNullOrEmpty(text.Translated) ?
                         text.Original : text.Translated;
-                    if (BP.BP_Dat.DictionaryEnabled) Replaced = BP.BP_Dat.ReplaceText(Replaced, false);
+                    if (PB.BP.DictionaryEnabled)
+                        Replaced = PB.BP.ReplaceText(Replaced, false);
                     return Replaced;
                 }
             }
