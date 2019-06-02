@@ -24,7 +24,7 @@ using Yarhl.IO;
 using Yarhl.Media.Text;
 using System.Runtime.InteropServices;
 
-namespace Pleinair.DAT
+namespace Pleinair.TALKDAT
 {
     class po2Binary : IConverter<Po, BinaryFormat>
     {

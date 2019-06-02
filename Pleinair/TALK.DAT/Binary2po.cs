@@ -23,7 +23,7 @@ using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
 
-namespace Pleinair.DAT
+namespace Pleinair.TALKDAT
 {
     public class Binary2Po : IConverter<BinaryFormat, Po>
     {
@@ -35,7 +35,7 @@ namespace Pleinair.DAT
         public List<int> Positions { get; set; }
         public List<String> TextPosition { get; set; }
         public List<int> Sizes { get; set; }
-        public Encoding SJIS => Encoding.GetEncoding("shift_jis");
+        public static Encoding SJIS => Encoding.GetEncoding("shift_jis");
         private Dictionary<string, string> Map { get; set; }
         public string Texto { get; set; }
         private string SplitHeader { get; set; }

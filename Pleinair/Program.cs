@@ -27,6 +27,8 @@ namespace Pleinair
 {
     class Program
     {
+        private static IConverter<BinaryFormat, Po> converter;
+
         static void Main(string[] args)
         {
             Console.WriteLine("Pleinair — A disgaea toolkit for fantranslations by Darkmet98.\nVersion: 1.0");
@@ -36,22 +38,25 @@ namespace Pleinair
             {
                 Console.WriteLine("\nUsage: Pleinar.exe <-export/-import/-export_elf>");
                 Console.WriteLine("\nTALK.DAT");
-                Console.WriteLine("Export TALK.DAT to Po: Pleinair.exe -export \"TALK.DAT\"");
-                Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import \"TALK.po\" \"TALK.DAT\"");
+                Console.WriteLine("Export TALK.DAT to Po: Pleinair.exe -export_talkdat \"TALK.DAT\"");
+                Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_talkdat \"TALK.po\" \"TALK.DAT\"");
+                Console.WriteLine("\nANOTHER DAT");
+                Console.WriteLine("Export CHAR_E.DAT to Po: Pleinair.exe -export_dat \"CHAR_E.DAT\"");
+                //Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_dat \"TALK.po\" \"TALK.DAT\"");
                 Console.WriteLine("\nExecutable");
                 Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair.exe -export_elf \"dis1_st.exe\"");
                 return;
             }
             switch (args[0])
             {
-                case "-export":
+                case "-export_talkdat":
                     if (File.Exists(args[1]))
                     {
                         // 1
                         Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
 
                         // 2
-                        DAT.Binary2Po converter = new DAT.Binary2Po { };
+                        converter = new TALKDAT.Binary2Po { };
 
                         Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
                         //3
@@ -61,7 +66,7 @@ namespace Pleinair
                         nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
                     }
                     break;
-                case "-import":
+                case "-import_talkdat":
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
 
@@ -69,7 +74,7 @@ namespace Pleinair
                         Node nodo = NodeFactory.FromFile(args[1]); // Po
 
                         // 2
-                        DAT.po2Binary P2B = new DAT.po2Binary
+                        TALKDAT.po2Binary P2B = new TALKDAT.po2Binary
                         {
                             OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
                             {
@@ -93,7 +98,7 @@ namespace Pleinair
                         Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
 
                         // 2
-                        ELF.Binary2Po converter = new ELF.Binary2Po { };
+                        converter = new ELF.Binary2Po { };
 
                         Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
                         //3
@@ -126,6 +131,30 @@ namespace Pleinair
                         Console.WriteLine("Importing " + args[1] + "...");
                         string file = args[1].Remove(args[1].Length - 4);
                         nodoDat.Stream.WriteTo(file + "_new.exe");
+                    }
+                    break;
+                case "-export_dat":
+                    if (File.Exists(args[1]))
+                    {
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
+
+                        // 2
+                        switch(Path.GetFileName(args[1]).ToUpper())
+                        {
+                            case "CHAR_E.DAT":
+                                converter = new DAT.Binary2po_CHAR_E { };
+                                break;
+                            case "CHARHELP.DAT":
+                                converter = new DAT.Binary2po_CHARHELP { };
+                                break;
+                        }
+
+                        Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
+                        //3
+                        Console.WriteLine("Exporting " + args[1] + "...");
+
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(Path.GetFileName(args[1]) + ".pot");
                     }
                     break;
             }

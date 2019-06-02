@@ -24,12 +24,12 @@ namespace Pleinair.ELF
 {
     class po2Binary : IConverter<Po, BinaryFormat>
     {
-        private DAT.po2Binary PB { get; set; }
+        private TALKDAT.po2Binary PB { get; set; }
         private Binary2Po BP { get; set; }
         public DataReader OriginalFile { get; set; }
         public po2Binary()
         {
-            PB = new DAT.po2Binary();
+            PB = new TALKDAT.po2Binary();
             BP = new Binary2Po();
         }
 
