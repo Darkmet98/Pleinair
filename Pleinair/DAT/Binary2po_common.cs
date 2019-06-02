@@ -27,9 +27,11 @@ namespace Pleinair.DAT
         protected int NameLength { get; set; }
         protected int DescriptionLength { get; set; }
         protected int ValuesLength { get; set; }
+        protected int Values2Length { get; set; }
         protected int PaddingLength { get; set; }
         protected int CountLength { get; set; }
         protected int Count { get; set; }
+        protected string Comment { get; set; }
         protected DataReader reader { get; set; }
         protected Po po { get; set; }
 
@@ -39,6 +41,7 @@ namespace Pleinair.DAT
             {
                 Header = new PoHeader("Disgaea", "dummy@dummy.com", "en-US")
             };
+            Comment = "";
         }
 
         public Po Convert(BinaryFormat source) {
@@ -56,6 +59,7 @@ namespace Pleinair.DAT
                 PoEntry entry = new PoEntry(); //Generate the entry on the po file
                 entry.Original = DumpText(); //Text
                 entry.Context = i.ToString(); //Context
+                entry.ExtractedComments = Comment + "\n#.(ASCII Char = 1 char, Special char = 2 char)";
                 po.Add(entry);
             }
             return po;

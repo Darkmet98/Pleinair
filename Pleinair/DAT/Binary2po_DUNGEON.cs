@@ -17,22 +17,23 @@
 //
 namespace Pleinair.DAT
 {
-    class Binary2po_CHARHELP : Binary2po_common
+    class Binary2po_DUNGEON : Binary2po_common
     {
-        public Binary2po_CHARHELP()
+        public Binary2po_DUNGEON()
         {
-            NameLength = 0x70;
+            NameLength = 0x20;
             PaddingLength = 2;
-            ValuesLength = 2;
+            ValuesLength = 4;
             CountLength = 2;
-            Comment = "Max size = 112 characters";
+            Comment = "Max size = 32 characters";
         }
 
         public override string DumpText()
         {
             string result = "";
-            reader.Stream.Position += ValuesLength;
             result += GetText(NameLength);
+            reader.Stream.Position += PaddingLength;
+            reader.Stream.Position += ValuesLength;
             reader.Stream.Position += PaddingLength;
             return result;
         }

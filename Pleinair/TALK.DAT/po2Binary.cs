@@ -142,14 +142,14 @@ namespace Pleinair.TALKDAT
                         else
                         {
                             String charax = ToFullWidth(array[i].ToString());
-                            byte[] toSJISx = BP.SJIS.GetBytes(charax);
+                            byte[] toSJISx = Binary2Po.SJIS.GetBytes(charax);
                             block.Add(toSJISx[0]);
                             block.Add(toSJISx[1]);
                         }
                         break;
                     default:
                         String chara = ToFullWidth(array[i].ToString());
-                        byte[] toSJIS = BP.SJIS.GetBytes(chara);
+                        byte[] toSJIS = Binary2Po.SJIS.GetBytes(chara);
                         block.Add(toSJIS[0]);
                         block.Add(toSJIS[1]);
                         break;

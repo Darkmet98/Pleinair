@@ -132,7 +132,7 @@ namespace Pleinair.ELF
             {
                 if (FullWidthCharacters.TryGetValue(chara, out ushort value)) result.AddRange(BitConverter.GetBytes(value));
                 else {
-                    byte[] stringtext = PB.BP.SJIS.GetBytes(new char[] { chara });
+                    byte[] stringtext = TALKDAT.Binary2Po.SJIS.GetBytes(new char[] { chara });
                     result.AddRange(stringtext);
                 }
             }

@@ -26,7 +26,6 @@ namespace Pleinair.ELF
 {
     public class Binary2Po : IConverter<BinaryFormat, Po>
     {
-        public TALKDAT.Binary2Po BP_Dat { get; set; }
         private List<ushort> Text { get; set; }
         public int SizeBlock { get; set; }
         private string TextNormalized { get; set; }
@@ -34,7 +33,6 @@ namespace Pleinair.ELF
         public Binary2Po()
         {
             Text = new List<ushort>();
-            BP_Dat = new TALKDAT.Binary2Po();
         }
 
         public Po Convert(BinaryFormat source)
@@ -124,7 +122,7 @@ namespace Pleinair.ELF
             for (int i = 0; i < Text.Count; i++)
             {
                 byte[] arraysjis = BitConverter.GetBytes(Text[i]);
-                string temp = BP_Dat.SJIS.GetString(arraysjis);
+                string temp = TALKDAT.Binary2Po.SJIS.GetString(arraysjis);
                 TextNormalized += temp.Normalize(NormalizationForm.FormKC);
             }
             //Delete the /0/0

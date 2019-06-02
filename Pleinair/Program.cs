@@ -41,10 +41,11 @@ namespace Pleinair
                 Console.WriteLine("Export TALK.DAT to Po: Pleinair.exe -export_talkdat \"TALK.DAT\"");
                 Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_talkdat \"TALK.po\" \"TALK.DAT\"");
                 Console.WriteLine("\nANOTHER DAT");
-                Console.WriteLine("Export CHAR_E.DAT to Po: Pleinair.exe -export_dat \"CHAR_E.DAT\"");
-                //Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_dat \"TALK.po\" \"TALK.DAT\"");
+                Console.WriteLine("Export DAT to Po: Pleinair.exe -export_dat \"CHAR_E.DAT\"");
+                //Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
                 Console.WriteLine("\nExecutable");
                 Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair.exe -export_elf \"dis1_st.exe\"");
+                Console.WriteLine("Import the Po to dis1_st.exe: Pleinair.exe -import_elf \"dis1_st.po\" \"dis1_st.exe\"");
                 return;
             }
             switch (args[0])
@@ -147,6 +148,39 @@ namespace Pleinair
                                 break;
                             case "CHARHELP.DAT":
                                 converter = new DAT.Binary2po_CHARHELP { };
+                                break;
+                            case "DUNGEON.DAT":
+                                converter = new DAT.Binary2po_DUNGEON { };
+                                break;
+                            case "GE.DAT":
+                                converter = new DAT.Binary2po_GE { };
+                                break;
+                            case "GEOCUBE.DAT":
+                                converter = new DAT.Binary2po_GEOCUBE { };
+                                break;
+                            case "HABIT.DAT":
+                                converter = new DAT.Binary2po_HABIT { };
+                                break;
+                            case "MAGIC.DAT":
+                                converter = new DAT.Binary2po_MAGIC { };
+                                break;
+                            case "MITEM.DAT":
+                                converter = new DAT.Binary2po_MITEM { };
+                                break;
+                            case "MUSICSHOP.DAT":
+                                converter = new DAT.Binary2po_MUSICSHOP { };
+                                break;
+                            case "THIEF.DAT":
+                                converter = new DAT.Binary2po_THIEF { };
+                                break;
+                            case "WISH.DAT":
+                                converter = new DAT.Binary2po_WISH { };
+                                break;
+                            case "ZUKAN.DAT":
+                                converter = new DAT.Binary2po_ZUKAN { };
+                                break;
+                            default:
+                                //Exception
                                 break;
                         }
 

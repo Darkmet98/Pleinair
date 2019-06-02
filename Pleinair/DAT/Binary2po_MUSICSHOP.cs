@@ -15,17 +15,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
+
 namespace Pleinair.DAT
 {
-    class Binary2po_CHARHELP : Binary2po_common
+    class Binary2po_MUSICSHOP : Binary2po_common
     {
-        public Binary2po_CHARHELP()
+        public Binary2po_MUSICSHOP()
         {
-            NameLength = 0x70;
-            PaddingLength = 2;
-            ValuesLength = 2;
-            CountLength = 2;
-            Comment = "Max size = 112 characters";
+            NameLength = 0x14;
+            DescriptionLength = 0x70;
+            PaddingLength = 1;
+            ValuesLength = 0xC;
+            Values2Length = 2;
+            CountLength = 1;
+            Comment = "Name max size = 20 characters\n#.Description max size = 112 characters";
         }
 
         public override string DumpText()
@@ -34,6 +37,9 @@ namespace Pleinair.DAT
             reader.Stream.Position += ValuesLength;
             result += GetText(NameLength);
             reader.Stream.Position += PaddingLength;
+            result += "|" + GetText(DescriptionLength);
+            reader.Stream.Position += PaddingLength;
+            reader.Stream.Position += Values2Length;
             return result;
         }
     }

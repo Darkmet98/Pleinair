@@ -36,7 +36,8 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Pleinair.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -73,6 +74,16 @@
     <Compile Include="DAT\Binary2po_CHARHELP.cs" />
     <Compile Include="DAT\Binary2po_CHAR_E.cs" />
     <Compile Include="DAT\Binary2po_common.cs" />
+    <Compile Include="DAT\Binary2po_DUNGEON.cs" />
+    <Compile Include="DAT\Binary2po_GE.cs" />
+    <Compile Include="DAT\Binary2po_GEOCUBE.cs" />
+    <Compile Include="DAT\Binary2po_HABIT.cs" />
+    <Compile Include="DAT\Binary2po_MAGIC.cs" />
+    <Compile Include="DAT\Binary2po_MITEM.cs" />
+    <Compile Include="DAT\Binary2po_MUSICSHOP.cs" />
+    <Compile Include="DAT\Binary2po_THIEF.cs" />
+    <Compile Include="DAT\Binary2po_WISH.cs" />
+    <Compile Include="DAT\Binary2po_ZUKAN.cs" />
     <Compile Include="TALK.DAT\Binary2po.cs" />
     <Compile Include="TALK.DAT\po2Binary.cs" />
     <Compile Include="ELF\Binary2po.cs" />
