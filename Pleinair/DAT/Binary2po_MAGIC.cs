@@ -22,7 +22,7 @@ namespace Pleinair.DAT
         public Binary2po_MAGIC()
         {
             NameLength = 0x20;
-            DescriptionLength = 0x70;
+            DescriptionLength = 0x6E;
             PaddingLength = 1;
             ValuesLength = 8;
             Values2Length = 0x12;
@@ -36,6 +36,7 @@ namespace Pleinair.DAT
             reader.Stream.Position += ValuesLength;
             result += GetText(NameLength);
             reader.Stream.Position += PaddingLength;
+            reader.Stream.Position += 2;
             result += "|" + GetText(DescriptionLength);
             reader.Stream.Position += PaddingLength;
             reader.Stream.Position += Values2Length;

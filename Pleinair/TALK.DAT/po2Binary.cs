@@ -125,7 +125,7 @@ namespace Pleinair.TALKDAT
                         i += 3;
                         break;
                     case '[':
-                        if (array[i + 1] == 'S' && array[i + 2] == 'T' && array[i + 6] == 'S')
+                        if (array[i + 1] == 'S' && array[i + 2] == 'T')
                         {
                             //{01}
                             block.Add(1);
