@@ -16,6 +16,8 @@
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
 
+using System.Collections.Generic;
+
 namespace Pleinair.DAT
 {
     class Binary2po_CHAR_E : Binary2po_common

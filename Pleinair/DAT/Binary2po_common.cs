@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.IO;
@@ -24,13 +26,13 @@ namespace Pleinair.DAT
 {
     class Binary2po_common : IConverter<BinaryFormat, Po>
     {
-        protected int NameLength { get; set; }
-        protected int DescriptionLength { get; set; }
-        protected int ValuesLength { get; set; }
-        protected int Values2Length { get; set; }
-        protected int PaddingLength { get; set; }
-        protected int CountLength { get; set; }
-        protected int Count { get; set; }
+        public int NameLength { get; set; }
+        public int DescriptionLength { get; set; }
+        public int ValuesLength { get; set; }
+        public int Values2Length { get; set; }
+        public int PaddingLength { get; set; }
+        public int CountLength { get; set; }
+        public int Count { get; set; }
         protected string Comment { get; set; }
         protected DataReader reader { get; set; }
         protected Po po { get; set; }
@@ -53,7 +55,6 @@ namespace Pleinair.DAT
             };
 
             LoadCount();
-
             for (int i = 0; i < Count; i++)
             {
                 PoEntry entry = new PoEntry(); //Generate the entry on the po file

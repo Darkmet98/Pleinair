@@ -124,7 +124,7 @@ namespace Pleinair.ELF
             return null;
         }
 
-        private byte[] GetArrayBytes(string text)
+        public byte[] GetArrayBytes(string text)
         {
             List<Byte> result = new List<byte>();
 

@@ -28,6 +28,7 @@ namespace Pleinair
     class Program
     {
         private static IConverter<BinaryFormat, Po> converter;
+        private static IConverter<Po, BinaryFormat> importer;
 
         static void Main(string[] args)
         {
@@ -42,7 +43,7 @@ namespace Pleinair
                 Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_talkdat \"TALK.po\" \"TALK.DAT\"");
                 Console.WriteLine("\nANOTHER DAT");
                 Console.WriteLine("Export DAT to Po: Pleinair.exe -export_dat \"CHAR_E.DAT\"");
-                //Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
+                Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
                 Console.WriteLine("\nExecutable");
                 Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair.exe -export_elf \"dis1_st.exe\"");
                 Console.WriteLine("Import the Po to dis1_st.exe: Pleinair.exe -import_elf \"dis1_st.po\" \"dis1_st.exe\"");
@@ -188,7 +189,72 @@ namespace Pleinair
                         //3
                         Console.WriteLine("Exporting " + args[1] + "...");
 
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(Path.GetFileName(args[1]) + ".pot");
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(Path.GetFileName(args[1]) + ".po");
+                    }
+                    break;
+                case "-import_dat":
+                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    {
+
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // Po
+
+                        // 2
+                        switch (Path.GetFileName(args[2]).ToUpper())
+                        {
+                            case "CHAR_E.DAT":
+                                importer = new DAT.Import.Po2binary_CHAR_E {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
+                                break;
+                            /*case "CHARHELP.DAT":
+                                converter = new DAT.Binary2po_CHARHELP { };
+                                break;
+                            case "DUNGEON.DAT":
+                                converter = new DAT.Binary2po_DUNGEON { };
+                                break;
+                            case "GE.DAT":
+                                converter = new DAT.Binary2po_GE { };
+                                break;
+                            case "GEOCUBE.DAT":
+                                converter = new DAT.Binary2po_GEOCUBE { };
+                                break;
+                            case "HABIT.DAT":
+                                converter = new DAT.Binary2po_HABIT { };
+                                break;
+                            case "MAGIC.DAT":
+                                converter = new DAT.Binary2po_MAGIC { };
+                                break;
+                            case "MITEM.DAT":
+                                converter = new DAT.Binary2po_MITEM { };
+                                break;
+                            case "MUSICSHOP.DAT":
+                                converter = new DAT.Binary2po_MUSICSHOP { };
+                                break;
+                            case "THIEF.DAT":
+                                converter = new DAT.Binary2po_THIEF { };
+                                break;
+                            case "WISH.DAT":
+                                converter = new DAT.Binary2po_WISH { };
+                                break;
+                            case "ZUKAN.DAT":
+                                converter = new DAT.Binary2po_ZUKAN { };
+                                break;*/
+                            default:
+                                //Exception
+                                break;
+                        }
+
+                        nodo.Transform<Po2Binary, BinaryFormat, Po>();
+                        Node nodoDat = nodo.Transform<Po, BinaryFormat>(importer);
+                        //3
+                        Console.WriteLine("Importing " + args[1] + "...");
+                        string file = args[1].Remove(args[1].Length - 4);
+                        nodoDat.Stream.WriteTo(file + "_new.DAT");
                     }
                     break;
             }
