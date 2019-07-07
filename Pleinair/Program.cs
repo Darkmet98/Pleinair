@@ -211,39 +211,116 @@ namespace Pleinair
                                     }
                                 };
                                 break;
-                            /*case "CHARHELP.DAT":
-                                converter = new DAT.Binary2po_CHARHELP { };
+                            case "CHARHELP.DAT":
+                                importer = new DAT.Import.Po2binary_CHARHELP
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "DUNGEON.DAT":
-                                converter = new DAT.Binary2po_DUNGEON { };
+                                importer = new DAT.Import.Po2binary_DUNGEON
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "GE.DAT":
-                                converter = new DAT.Binary2po_GE { };
+                                importer = new DAT.Import.Po2binary_GE
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "GEOCUBE.DAT":
-                                converter = new DAT.Binary2po_GEOCUBE { };
+                                importer = new DAT.Import.Po2binary_GEOCUBE
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "HABIT.DAT":
-                                converter = new DAT.Binary2po_HABIT { };
+                                importer = new DAT.Import.Po2binary_HABIT
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "MAGIC.DAT":
-                                converter = new DAT.Binary2po_MAGIC { };
+                                importer = new DAT.Import.Po2binary_MAGIC
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "MITEM.DAT":
-                                converter = new DAT.Binary2po_MITEM { };
+                                importer = new DAT.Import.Po2binary_MITEM
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "MUSICSHOP.DAT":
-                                converter = new DAT.Binary2po_MUSICSHOP { };
+                                importer = new DAT.Import.Po2binary_MUSICSHOP
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "THIEF.DAT":
-                                converter = new DAT.Binary2po_THIEF { };
+                                importer = new DAT.Import.Po2binary_THIEF
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "WISH.DAT":
-                                converter = new DAT.Binary2po_WISH { };
+                                importer = new DAT.Import.Po2binary_WISH
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
                                 break;
                             case "ZUKAN.DAT":
-                                converter = new DAT.Binary2po_ZUKAN { };
-                                break;*/
+                                importer = new DAT.Import.Po2binary_ZUKAN
+                                {
+                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
+                                    {
+                                        DefaultEncoding = new UTF8Encoding(),
+                                        Endianness = EndiannessMode.LittleEndian,
+                                    }
+                                };
+                                break;
                             default:
                                 //Exception
                                 break;

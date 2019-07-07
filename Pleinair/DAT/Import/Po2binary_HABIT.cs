@@ -15,33 +15,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
-namespace Pleinair.DAT
+using System;
+
+namespace Pleinair.DAT.Import
 {
-    class Binary2po_ZUKAN : Binary2po_common
+    class Po2binary_HABIT : Po2binary_common
     {
-        public Binary2po_ZUKAN()
+        public Po2binary_HABIT()
         {
-            NameLength = 0x20;
-            DescriptionLength = 0x56;
-            PaddingLength = 4;
-            ValuesLength = 4;
-            CountLength = 1;
-            Comment = "Name max size = 32 characters\n#.Description max size = 86 characters per 8 lines";
+            BP_Common.NameLength = 0x20;
+            BP_Common.PaddingLength = 2;
+            BP_Common.ValuesLength = 0X1E;
+            BP_Common.CountLength = 2;
         }
-
-        public override string DumpText()
+        public override void InsertText()
         {
-            string result = "";
-            reader.Stream.Position += ValuesLength;
-            result += GetText(NameLength) + "|";
-            for (int i = 0; i < 8; i++)
+            foreach (var entry in Data.Entries)
             {
-                reader.Stream.Position += 1;
-                result += GetText(DescriptionLength) + '\n';
+                String poText = string.IsNullOrEmpty(entry.Translated) ?
+                entry.Original : entry.Translated;
+                WriteText(BP_Common.NameLength, poText);
+                Writer.Stream.Position += BP_Common.PaddingLength;
+                Writer.Stream.Position += BP_Common.ValuesLength;
             }
-            reader.Stream.Position += PaddingLength;
-
-            return result;
         }
     }
 }

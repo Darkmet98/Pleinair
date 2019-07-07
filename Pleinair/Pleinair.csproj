@@ -87,6 +87,15 @@
     <Compile Include="DAT\Import\Po2binary_CHARHELP.cs" />
     <Compile Include="DAT\Import\Po2binary_CHAR_E.cs" />
     <Compile Include="DAT\Import\Po2binary_DUNGEON.cs" />
+    <Compile Include="DAT\Import\Po2binary_GE.cs" />
+    <Compile Include="DAT\Import\Po2binary_GEOCUBE.cs" />
+    <Compile Include="DAT\Import\Po2binary_HABIT.cs" />
+    <Compile Include="DAT\Import\Po2binary_MAGIC.cs" />
+    <Compile Include="DAT\Import\Po2binary_MITEM.cs" />
+    <Compile Include="DAT\Import\Po2binary_MUSICSHOP.cs" />
+    <Compile Include="DAT\Import\Po2binary_THIEF.cs" />
+    <Compile Include="DAT\Import\Po2binary_WISH.cs" />
+    <Compile Include="DAT\Import\Po2binary_ZUKAN.cs" />
     <Compile Include="DAT\Po2binary_common.cs" />
     <Compile Include="TALK.DAT\Binary2po.cs" />
     <Compile Include="TALK.DAT\po2Binary.cs" />
