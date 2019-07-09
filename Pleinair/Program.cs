@@ -329,8 +329,8 @@ namespace Pleinair
                         nodo.Transform<Po2Binary, BinaryFormat, Po>();
                         Node nodoDat = nodo.Transform<Po, BinaryFormat>(importer);
                         //3
-                        Console.WriteLine("Importing " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 4);
+                        Console.WriteLine("Importing " + args[2] + "...");
+                        string file = args[1].Remove(args[2].Length - 4);
                         nodoDat.Stream.WriteTo(file + "_new.DAT");
                     }
                     break;

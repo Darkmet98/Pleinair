@@ -28,7 +28,7 @@ namespace Pleinair.DAT
             ValuesLength = 0xC;
             Values2Length = 2;
             CountLength = 1;
-            Comment = "Name max size = 20 characters\n#.Description max size = 112 characters";
+            Comment = "Name max size = 20 characters\n#. Description max size = 112 characters";
         }
 
         public override string DumpText()
