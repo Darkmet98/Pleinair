@@ -60,7 +60,7 @@ namespace Pleinair.DAT
                 PoEntry entry = new PoEntry(); //Generate the entry on the po file
                 entry.Original = DumpText(); //Text
                 entry.Context = i.ToString(); //Context
-                entry.ExtractedComments = Comment + "\n#.(ASCII Char = 1 char, Special char = 2 char)";
+                entry.ExtractedComments = Comment + "\n#. (ASCII Char = 1 char, Special char = 2 char)";
                 po.Add(entry);
             }
             return po;
