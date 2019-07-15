@@ -105,7 +105,7 @@ namespace Pleinair.DAT
             //Return to the original position
             Writer.Stream.Position -= size;
             //Write the translation
-            Writer.Write(BP_TalkDat.ReplaceText(line, false), false, Encoding.UTF8, size);
+            Writer.Write(BP_TalkDat.ReplaceText(line, false), false, TALKDAT.Binary2Po.SJIS, size);
             //Return to the last position
             Writer.Stream.PopPosition();
        }

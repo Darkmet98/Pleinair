@@ -35,25 +35,27 @@ namespace Pleinair.DAT.Import
         {
             //Generate the text Lists if they are on the po name and description
             GenerateList();
-            GenerateLines();
+            //GenerateLines();
 
             for (int i = 0; i < NameStrings.Count; i++)
             {
+                GenerateLines(i);
                 Writer.Stream.Position += BP_Common.ValuesLength;
                 WriteText(BP_Common.NameLength, NameStrings[i]);
                 for (int o = 0; o < 8; o++)
                 {
                     Writer.Stream.Position += 1;
-                    if (o <= Lines.Count) WriteText(BP_Common.DescriptionLength, Lines[o]);
+                    if (o < Lines.Count) WriteText(BP_Common.DescriptionLength, Lines[o]);
                     else Writer.WriteTimes(0x0, BP_Common.DescriptionLength);
                 }
                 Writer.Stream.Position += BP_Common.PaddingLength;
+                Lines.Clear();
             }
         }
 
-        private void GenerateLines()
+        private void GenerateLines(int i)
         {
-            string[] line = DescriptionStrings[1].Split('\n');
+            string[] line = DescriptionStrings[i].Split('\n');
             foreach (string original in line)
             {
                 Lines.Add(original);
