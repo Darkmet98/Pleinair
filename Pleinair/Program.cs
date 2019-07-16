@@ -334,6 +334,27 @@ namespace Pleinair
                         nodoDat.Stream.WriteTo(file + "_new.DAT");
                     }
                     break;
+
+                case "-export_scriptdat":
+                    if (File.Exists(args[1]))
+                    {
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
+
+                        // 2
+                        IConverter<BinaryFormat, SCRIPT.DAT.SCRIPT> ScriptConverter = new SCRIPT.DAT.BinaryFormat2Script { };
+                        Node nodoScript = nodo.Transform(ScriptConverter);
+
+                        // 3
+                        IConverter<SCRIPT.DAT.SCRIPT, Po> PoConverter = new SCRIPT.DAT.Script2po { };
+                        Node nodoPo = nodoScript.Transform(PoConverter);
+
+                        //4
+                        Console.WriteLine("Exporting " + args[1] + "...");
+                        string file = args[1].Remove(args[1].Length - 4);
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
+                    }
+                    break;
             }
         }
     }
