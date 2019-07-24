@@ -118,7 +118,7 @@ namespace Pleinair.ELF
                         text.Original : text.Translated;
                     if (PB.BP.DictionaryEnabled)
                         Replaced = PB.BP.ReplaceText(Replaced, false);
-                    return Replaced;
+                    return ReplaceText(PB.ToFullWidth(Replaced), true);
                 }
             }
             return null;
@@ -138,6 +138,32 @@ namespace Pleinair.ELF
             }
 
             return result.ToArray();
+        }
+
+        private Dictionary<string, string> Variables = new Dictionary<string, string>()
+        {
+            {"％ｓ", "%s"},
+            {"％ｘ", "%x"},
+            {"％ｄ％", "%d%"},
+            {"％ｄ", "%d"},
+            {"％３ｄ％", "%3d%"},
+            {"％０３ｄ％", "%03d%"},
+            {"％３ｄ", "%3d"},
+            {"％２ｄ", "%2d"},
+            {"％４ｄ", "%4d"},
+            {"％０２ｄ", "%02d"},
+            {"％０３ｄ", "%03d"}
+        };
+
+        public String ReplaceText(string line, bool export)
+        {
+            string result = line;
+            foreach (var replace in Variables)
+            {
+                if (export) result = result.Replace(replace.Key, replace.Value);
+                else result = result.Replace(replace.Value, replace.Key);
+            }
+            return result;
         }
 
         private Dictionary<char, ushort> FullWidthCharacters = new Dictionary<char, ushort>()

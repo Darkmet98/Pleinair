@@ -158,7 +158,7 @@ namespace Pleinair.TALKDAT
             Blocks.Add(block.ToArray());
         }
 
-        private string ToFullWidth(string halfWidth)
+        public string ToFullWidth(string halfWidth)
         {
             StringBuilder sb = new StringBuilder(256);
             LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_FULLWIDTH, halfWidth, -1, sb, sb.Capacity);
