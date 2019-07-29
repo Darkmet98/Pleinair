@@ -97,6 +97,9 @@
     <Compile Include="DAT\Import\Po2binary_WISH.cs" />
     <Compile Include="DAT\Import\Po2binary_ZUKAN.cs" />
     <Compile Include="DAT\Po2binary_common.cs" />
+    <Compile Include="FAD\BinaryFormat2Fad.cs" />
+    <Compile Include="FAD\FAD.cs" />
+    <Compile Include="FAD\Fad2NodeContainer.cs" />
     <Compile Include="SCRIPT.DAT\Script2po.cs" />
     <Compile Include="SCRIPT.DAT\BinaryFormat2Script.cs" />
     <Compile Include="SCRIPT.DAT\SCRIPT.cs" />

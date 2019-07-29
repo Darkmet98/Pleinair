@@ -47,6 +47,9 @@ namespace Pleinair
                 Console.WriteLine("\nExecutable");
                 Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair.exe -export_elf \"dis1_st.exe\"");
                 Console.WriteLine("Import the Po to dis1_st.exe: Pleinair.exe -import_elf \"dis1_st.po\" \"dis1_st.exe\"");
+                Console.WriteLine("\nFAD Files");
+                Console.WriteLine("Export Fad file: Pleinair.exe -export_fad \"ANMDAT.FAD\"");
+                //Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
                 return;
             }
             switch (args[0])
@@ -353,6 +356,33 @@ namespace Pleinair
                         Console.WriteLine("Exporting " + args[1] + "...");
                         string file = args[1].Remove(args[1].Length - 4);
                         nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
+                    }
+                    break;
+                case "-export_fad":
+                    if (File.Exists(args[1]))
+                    {
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
+
+                        // 2
+                        IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad { };
+                        Node nodoScript = nodo.Transform(FadConverter);
+
+                        // 3
+                        IConverter<FAD.FAD,NodeContainerFormat> ContainerConverter = new FAD.Fad2NodeContainer { };
+                        Node nodoContainer = nodoScript.Transform(ContainerConverter);
+
+                        //4
+                        Console.WriteLine("Exporting " + args[1] + "...");
+                        if (!Directory.Exists(args[1])) Directory.CreateDirectory(args[1].Remove(args[1].Length-4));
+
+                        foreach (var child in Navigator.IterateNodes(nodoContainer))
+                        {
+                            if (child.Stream == null)
+                                continue;
+                            string output = Path.Combine(args[1].Remove(args[1].Length - 4) + "\\" + child.Name);
+                            child.Stream.WriteTo(output);
+                        }
                     }
                     break;
             }
