@@ -364,13 +364,16 @@ namespace Pleinair
                         Console.WriteLine("Exporting " + args[1] + "...");
                         if (!Directory.Exists(args[1])) Directory.CreateDirectory(args[1].Remove(args[1].Length-4));
 
+                        YKCMP.Export.WriteExe();
                         foreach (var child in Navigator.IterateNodes(nodoContainer))
                         {
                             if (child.Stream == null)
                                 continue;
                             string output = Path.Combine(args[1].Remove(args[1].Length - 4) + "\\" + child.Name);
                             child.Stream.WriteTo(output);
+                            YKCMP.Export.ExportFile(output, output + ".decompressed");
                         }
+                        YKCMP.Export.DeleteExe();
                     }
                     break;
                 case "-import_fad":
