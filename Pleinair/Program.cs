@@ -395,6 +395,16 @@ namespace Pleinair
                         YKCMP.Export.DeleteExe();
                     }
                     break;
+                case "-export_image":
+                    if (File.Exists(args[1]))
+                    {
+                        using (var binaryFormat = new BinaryFormat(args[1]))
+                        {
+                            Images.ImageFormat image = binaryFormat.ConvertWith<Images.BinaryFormat2ImageFormat, BinaryFormat, Images.ImageFormat>();
+                            image.Pixels.CreateBitmap(image.Palette, 0).Save(args[1] + ".bmp");
+                        }
+                    }
+                    break;
             }
         }
 
