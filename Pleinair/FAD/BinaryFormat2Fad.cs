@@ -66,6 +66,9 @@ namespace Pleinair.FAD
             //Get the real container size
             for (int i = 0; i < result.ImagesCount; i++)
             {
+                //Read the header
+                reader.Stream.Position = result.Positions[i];
+                result.ContainerHeaders.Add(reader.ReadBytes(0x30));
                 //Skip the padding
                 reader.Stream.Position = result.Positions[i] + 0x10;
                 //Read the size of the image
@@ -75,6 +78,10 @@ namespace Pleinair.FAD
                 //Dump the image
                 result.Containers.Add(reader.ReadBytes(size));
             }
+
+            //Dump the header
+            reader.Stream.Position = 0x0;
+            result.Header = reader.ReadBytes((int)result.Positions[0]);
 
             return result;
         }

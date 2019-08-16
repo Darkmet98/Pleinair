@@ -30,7 +30,7 @@ namespace Pleinair.FAD
 
             for (int i = 0; i < source.ImagesCount; i++)
             {
-                Node child = NodeFactory.FromMemory(i.ToString() + ".YKCMP");
+                Node child = NodeFactory.FromMemory(i.ToString().PadLeft(2, '0') + ".YKCMPC");
                 child.Stream.Write(source.Containers[i], 0, source.Containers[i].Length);
                 container.Root.Add(child);
             }

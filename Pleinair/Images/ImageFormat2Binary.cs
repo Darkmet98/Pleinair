@@ -16,27 +16,25 @@
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Collections.Generic;
 using Yarhl.FileFormat;
+using Yarhl.IO;
+using Texim;
 
-namespace Pleinair.FAD
+namespace Pleinair.Images
 {
-    class FAD : Format
+    class ImageFormat2Binary : IConverter<PixelArray, BinaryFormat>
     {
-        public uint AnotherFilesCount { get; set; }
-        public uint ImagesCount { get; set; }
-        public List<uint> Positions { get; set; }
-        public List<uint> Sizes { get; set; }
-        public List<byte[]> Containers { get; set; }
-        public List<byte[]> ContainerHeaders { get; set; }
-        public byte[] Header { get; set; }
-
-        public FAD()
+        public DataReader OriginalFile { get; set; }
+        public BinaryFormat Convert(PixelArray source)
         {
-            Positions = new List<uint>();
-            Sizes = new List<uint>();
-            Containers = new List<byte[]>();
-            ContainerHeaders = new List<byte[]>();
+
+            BinaryFormat binary = new BinaryFormat();
+            DataWriter writer = new DataWriter(binary.Stream);
+            writer.Write(OriginalFile.ReadBytes(0x400));
+            writer.Write(source.GetData());
+            return binary;
         }
+
+
     }
 }

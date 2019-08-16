@@ -16,12 +16,14 @@
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.FileSystem;
 using Yarhl.IO;
 using Yarhl.Media.Text;
+using Texim;
 
 namespace Pleinair
 {
@@ -33,7 +35,7 @@ namespace Pleinair
         static void Main(string[] args)
         {
             Console.WriteLine("Pleinair — A disgaea toolkit for fantranslations by Darkmet98.\nVersion: 1.0");
-            Console.WriteLine("Thanks to Pleonex for the Yarhl libraries and iltrof for Ykcmp compression and decompression.");
+            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries and iltrof for Ykcmp compression and decompression.");
             Console.WriteLine("This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
@@ -371,13 +373,45 @@ namespace Pleinair
                                 continue;
                             string output = Path.Combine(args[1].Remove(args[1].Length - 4) + "\\" + child.Name);
                             child.Stream.WriteTo(output);
-                            YKCMP.Export.ExportFile(output, output + ".decompressed");
+                            YKCMP.Export.ExportFile(output, output.Remove(output.Length - 7) + ".YKCMP");
+                            ExportImage(output.Remove(output.Length - 7) + ".YKCMP");
+                            File.Delete(output);
                         }
                         YKCMP.Export.DeleteExe();
                     }
                     break;
                 case "-import_fad":
+                    if (File.Exists(args[1]) && Directory.Exists(args[2]))
+                    {
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
 
+                        // 2
+                        IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad { };
+                        Node nodoScript = nodo.Transform(FadConverter);
+
+                        YKCMP.Export.WriteExe();
+                        foreach (var image in Directory.GetFiles(args[2], "*.png"))
+                        {
+                            ImportImage(image.Remove(image.Length - 4) + ".YKCMP", image);
+                            YKCMP.Import.ImportFile(image.Remove(image.Length - 4) + "_new.YKCMP", image.Remove(image.Length - 4) + ".YKCMPC");
+                            //YKCMP.Import.ImportFile(image.Remove(image.Length - 4) + ".YKCMP", image.Remove(image.Length - 4) + ".YKCMPC");
+                        }
+                        YKCMP.Export.DeleteExe();
+
+                        Node nodeFoler = NodeFactory.FromDirectory(args[2], "*.YKCMPC");
+
+                        // 3
+                        IConverter<FAD.FAD, BinaryFormat> BinaryFormatConverter = new FAD.Fad2BinaryFormat {
+                            Container = nodeFoler
+                        };
+                        Node nodoBF = nodoScript.Transform(BinaryFormatConverter);
+
+                        //4
+                        Console.WriteLine("Importing " + args[1] + "...");
+                        string file = args[1].Remove(args[1].Length - 4);
+                        nodoBF.Stream.WriteTo(file + "_new.FAD");
+                    }
                     break;
                 case "-decompress":
                     if (File.Exists(args[1]))
@@ -398,14 +432,65 @@ namespace Pleinair
                 case "-export_image":
                     if (File.Exists(args[1]))
                     {
-                        using (var binaryFormat = new BinaryFormat(args[1]))
-                        {
-                            Images.ImageFormat image = binaryFormat.ConvertWith<Images.BinaryFormat2ImageFormat, BinaryFormat, Images.ImageFormat>();
-                            image.Pixels.CreateBitmap(image.Palette, 0).Save(args[1] + ".bmp");
-                        }
+                        ExportImage(args[1]);
+                    }
+                    break;
+                case "-import_image":
+                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    {
+                        ImportImage(args[1], args[2]);
                     }
                     break;
             }
+        }
+
+        private static void ExportImage(string file)
+        {
+            using (var binaryFormat = new BinaryFormat(file))
+            {
+                Images.ImageFormat image = binaryFormat.ConvertWith<Images.BinaryFormat2ImageFormat, BinaryFormat, Images.ImageFormat>();
+                image.Pixels.CreateBitmap(image.Palette, 0).Save(file.Remove(file.Length - 6) + ".png");
+            }
+        }
+
+        private static void ImportImage(string originalFile, string pngFile)
+        {
+            Console.WriteLine("Importing " + originalFile + "...");
+            //Example taken from texim
+
+            // Load palette to force colors when importing
+            Node palette = NodeFactory.FromFile(originalFile);
+            palette.Transform<Images.BinaryFormat2Palette, BinaryFormat, Palette>();
+
+            Bitmap newImage = (Bitmap)Image.FromFile(pngFile);
+            
+            var quantization = new Texim.Processing.FixedPaletteQuantization(palette.GetFormatAs<Palette>().GetPalette(0))
+            {};
+
+            Texim.ImageConverter importer = new Texim.ImageConverter
+            {
+                Format = ColorFormat.Indexed_8bpp,
+                PixelEncoding = PixelEncoding.Lineal,
+                Quantization = quantization
+            };
+
+            (Palette _, PixelArray pixelInfo) = importer.Convert(newImage);
+            // Save the new pixel info
+            Node newPixels = new Node("pxInfo", pixelInfo);
+
+            IConverter<PixelArray, BinaryFormat> ImageConverter = new Images.ImageFormat2Binary
+            {
+                OriginalFile = new DataReader(new DataStream(originalFile, FileOpenMode.Read))
+                {
+                    DefaultEncoding = new UTF8Encoding(),
+                    Endianness = EndiannessMode.LittleEndian,
+                }
+            };
+            Node nodoImage = newPixels.Transform(ImageConverter);
+
+
+            string file = originalFile.Remove(originalFile.Length - 6);
+            nodoImage.GetFormatAs<BinaryFormat>().Stream.WriteTo(file + "_new.YKCMP");
         }
 
         private static void ShowInfo()
@@ -426,7 +511,7 @@ namespace Pleinair
 
             Console.WriteLine("\nFAD Files");
             Console.WriteLine("Export Fad file: Pleinair.exe -export_fad \"ANMDAT.FAD\"");
-            //Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
+            Console.WriteLine("Import Fad file: Pleinair.exe -import_fad \"ANMDAT.FAD\" \"ANMDAT\"");
 
             Console.WriteLine("\nYKCMP Files");
             Console.WriteLine("Decompress YKCMP file manually: Pleinair.exe -decompress \"0.YKCMP\"");

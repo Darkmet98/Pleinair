@@ -62,8 +62,9 @@ namespace Pleinair.Images
                 byte red = reader.ReadByte();
                 byte green = reader.ReadByte();
                 byte blue = reader.ReadByte();
+                
                 byte alpha = reader.ReadByte();
-                palette.Add(Color.FromArgb(alpha, red, green, blue));
+                palette.Add(Color.FromArgb(alpha, blue, green, red));
             }
 
 

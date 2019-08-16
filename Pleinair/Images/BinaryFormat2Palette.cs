@@ -17,26 +17,31 @@
 //
 
 using System.Collections.Generic;
+using System.Drawing;
+using Texim;
+using Texim.Processing;
 using Yarhl.FileFormat;
+using Yarhl.IO;
 
-namespace Pleinair.FAD
+namespace Pleinair.Images
 {
-    class FAD : Format
+    class BinaryFormat2Palette : IConverter<BinaryFormat, Palette>
     {
-        public uint AnotherFilesCount { get; set; }
-        public uint ImagesCount { get; set; }
-        public List<uint> Positions { get; set; }
-        public List<uint> Sizes { get; set; }
-        public List<byte[]> Containers { get; set; }
-        public List<byte[]> ContainerHeaders { get; set; }
-        public byte[] Header { get; set; }
-
-        public FAD()
+        public Palette Convert(BinaryFormat source)
         {
-            Positions = new List<uint>();
-            Sizes = new List<uint>();
-            Containers = new List<byte[]>();
-            ContainerHeaders = new List<byte[]>();
+            DataReader reader = new DataReader(source.Stream);
+            //Thanks Pleonex
+            List<Color> palette = new List<Color>();
+            for (int i = 0; i < 0x400 / 4; i++)
+            {
+                byte red = reader.ReadByte();
+                byte green = reader.ReadByte();
+                byte blue = reader.ReadByte();
+                byte alpha = reader.ReadByte();
+                palette.Add(Color.FromArgb(alpha, blue, green, red));
+            }
+            return new Palette(palette.ToArray());
+
         }
     }
 }
