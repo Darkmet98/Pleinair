@@ -65,12 +65,16 @@ namespace Pleinair.TALKDAT
                 Endianness = EndiannessMode.LittleEndian,
             };
 
-            //Check if the dictionary exist
-            if (System.IO.File.Exists("TextArea.map"))
+            //Check if the variable dictionary exist
+            if (System.IO.File.Exists("TextVar.map"))
             {
                 DictionaryEnabled = true;
-                GenerateFontMap();
+                GenerateFontMap("TextVar.map");
             }
+
+            //Check if the dictionary exist
+            if (System.IO.File.Exists("TextArea.map")) GenerateFontMap("TextArea.map");
+
 
             //Read the number of blocks on the file
             Count = reader.ReadInt32();
@@ -263,9 +267,8 @@ namespace Pleinair.TALKDAT
             return result;
         }
 
-        public void GenerateFontMap()
+        public void GenerateFontMap(string file)
         {
-            string file = "TextArea.map";
             try
             {
                 string[] dictionary = System.IO.File.ReadAllLines(file);

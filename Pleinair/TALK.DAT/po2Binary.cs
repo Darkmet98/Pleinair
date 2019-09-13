@@ -46,12 +46,15 @@ namespace Pleinair.TALKDAT
 
         public BinaryFormat Convert(Po source) {
 
-            //Check if the dictionary exist
-            if (System.IO.File.Exists("TextArea.map"))
+            //Check if the variable dictionary exist
+            if (System.IO.File.Exists("TextVar.map"))
             {
                 BP.DictionaryEnabled = true;
-                BP.GenerateFontMap();
+                BP.GenerateFontMap("TextVar.map");
             }
+
+            //Check if the dictionary exist
+            if (System.IO.File.Exists("TextArea.map")) BP.GenerateFontMap("TextArea.map");
 
             //Generate the exported file
             BinaryFormat binary = new BinaryFormat();

@@ -39,7 +39,7 @@ namespace Pleinair.ELF
             if (System.IO.File.Exists("TextArea.map"))
             {
                 PB.BP.DictionaryEnabled = true;
-                PB.BP.GenerateFontMap();
+                PB.BP.GenerateFontMap("TextArea.map");
             }
 
             //Generate the exported file

@@ -48,7 +48,7 @@ namespace Pleinair.DAT
             if (System.IO.File.Exists("TextArea.map"))
             {
                 BP_TalkDat.DictionaryEnabled = true;
-                BP_TalkDat.GenerateFontMap();
+                BP_TalkDat.GenerateFontMap("TextArea.map");
             }
             //Generate the new dat
             GenerateFile();
