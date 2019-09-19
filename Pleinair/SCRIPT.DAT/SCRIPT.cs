@@ -22,17 +22,19 @@ namespace Pleinair.SCRIPT.DAT
 {
     class SCRIPT : Format
     {
-        public uint Count { get; set; }
-        public uint Position { get; set; }
-        public List<uint> Positions { get; set; }
-        public List<uint> Sizes { get; set; }
+        public int Count { get; set; }
+        public int Position { get; set; }
+        public int HeaderSize { get; set; }
+        public List<int> Positions { get; set; }
+        public List<int> Sizes { get; set; }
 
         public List<byte[]> Blocks { get; set; }
+        public byte[] TrashHeader { get; set; }
 
         public SCRIPT()
         {
-            Positions = new List<uint>();
-            Sizes = new List<uint>();
+            Positions = new List<int>();
+            Sizes = new List<int>();
             Blocks = new List<byte[]>();
         }
     }

@@ -58,7 +58,7 @@ namespace Pleinair
                         Console.WriteLine("Exporting " + args[1] + "...");
 
                         string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
                     }
                     break;
                 case "-import_talkdat":
@@ -100,7 +100,7 @@ namespace Pleinair
                         Console.WriteLine("Exporting " + args[1] + "...");
 
                         string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
                     }
                     break;
                 case "-import_elf":
@@ -345,7 +345,26 @@ namespace Pleinair
                         //4
                         Console.WriteLine("Exporting " + args[1] + "...");
                         string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".pot");
+                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
+                    }
+                    break;
+
+                case "-import_scriptdat":
+                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    {
+                        // 1
+                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
+
+                        // 2
+                        IConverter<BinaryFormat, SCRIPT.DAT.SCRIPT> ScriptConverter = new SCRIPT.DAT.BinaryFormat2Script { };
+                        Node nodoScript = nodo.Transform(ScriptConverter);
+
+                        // 3
+                        IConverter<Po, BinaryFormat> ScriptAndPoConverter = new SCRIPT.DAT.PoAndScript2BinaryFormat
+                        {
+                            Result = nodoScript.Format
+                        };
+
                     }
                     break;
                 case "-export_fad":
@@ -395,7 +414,6 @@ namespace Pleinair
                         {
                             ImportImage(image.Remove(image.Length - 4) + ".YKCMP", image);
                             YKCMP.Import.ImportFile(image.Remove(image.Length - 4) + "_new.YKCMP", image.Remove(image.Length - 4) + ".YKCMPC");
-                            //YKCMP.Import.ImportFile(image.Remove(image.Length - 4) + ".YKCMP", image.Remove(image.Length - 4) + ".YKCMPC");
                         }
                         YKCMP.Export.DeleteExe();
 

@@ -135,6 +135,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SCRIPT.DAT\PoAndScript2BinaryFormat.cs" />
     <Compile Include="SCRIPT.DAT\Script2po.cs" />
     <Compile Include="SCRIPT.DAT\BinaryFormat2Script.cs" />
     <Compile Include="SCRIPT.DAT\SCRIPT.cs" />

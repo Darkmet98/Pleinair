@@ -27,7 +27,6 @@ namespace Pleinair.SCRIPT.DAT
     class Script2po : IConverter<SCRIPT, Po>
     {
         Po po { get; set; }
-        string TextNormalized { get; set; }
 
         public Script2po()
         {
@@ -39,30 +38,52 @@ namespace Pleinair.SCRIPT.DAT
 
         public Po Convert(SCRIPT source) {
 
-            int o = 0;
+            int block = 0;
+            int dialog = 1;
+            int blocklength = 0;
+            string text = "";
+            bool textdump = false;
             for (int i = 0; i < source.Blocks.Count; i++)
             {
                 if (TextBlocks.Contains(i))
                 {
-                    PoEntry entry = new PoEntry(); //Generate the entry on the po file
-                    entry.Context = o.ToString();
                     
                     for(int e = 0; e < source.Blocks[i].Length; e++)
                     {
-                        if(source.Blocks[i][e] == 0x32 && (source.Blocks[i][e-1] == 0 || source.Blocks[i][e-1] == 0xBE))
+                        if (source.Blocks[i][e] == 0x32 && source.Blocks[i][e - 1] == 0xBE && !textdump)
+                            textdump = true;
+
+                        if(textdump)
                         {
                             byte size = source.Blocks[i][e + 1];
                             byte[] arraysjis = new byte[size];
                             Buffer.BlockCopy(source.Blocks[i], (e + 2), arraysjis, 0, size);
-                            TextNormalized += GetText(arraysjis) + '\n';
-                            e = e+1+size;
+                            e = e + 1 + size;
+                            blocklength += size + 2;
+                            text += GetText(arraysjis) + "\n";
+                        }
+
+                        if (textdump && 
+                           (source.Blocks[i][e+1] == 0x07 && source.Blocks[i][e + 2] == 0x0E ||
+                            source.Blocks[i][e + 1] == 0x83 && source.Blocks[i][e + 2] == 0x03 ||
+                           (source.Blocks[i][e+1] == 0x01 && (source.Blocks[i][e + 2] == 0x01 || 
+                            source.Blocks[i][e + 2] == 0x02))))
+                        {
+                            textdump = false;
+                            PoEntry entry = new PoEntry(); //Generate the entry on the po file
+
+                            entry.Original = text;
+                            entry.Context = "Block: " + block.ToString() + " Dialog: " + dialog;
+                            entry.Reference = blocklength.ToString();
+                            po.Add(entry);
+
+                            text = "";
+                            dialog++;
+                            blocklength = 0;
                         }
                     }
-                    entry.Original = TextNormalized;
-                    po.Add(entry);
-                    TextNormalized = "";
-                    Console.WriteLine("Hecho el archivo " + o);
-                    o++;
+                    block++;
+                    dialog = 1;
                 }
             }
             return po;
@@ -79,7 +100,7 @@ namespace Pleinair.SCRIPT.DAT
         }
 
         //Text blocks
-        public List<int> TextBlocks = new List<int>()
+        public static List<int> TextBlocks = new List<int>()
         {
            1375, 1488, 1537, 1687, 1793, 1958, 2025, 2122, 2257, 2357, 2373, 2510, 2779
         };
