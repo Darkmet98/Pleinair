@@ -72,7 +72,7 @@ namespace Pleinair.SCRIPT.DAT
                             textdump = false;
                             PoEntry entry = new PoEntry(); //Generate the entry on the po file
 
-                            entry.Original = text;
+                            entry.Original = text.Remove(text.Length-1);
                             entry.Context = "Block: " + block.ToString() + " Dialog: " + dialog;
                             entry.Reference = blocklength.ToString();
                             po.Add(entry);

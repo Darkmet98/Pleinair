@@ -353,18 +353,21 @@ namespace Pleinair
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
                         // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
+                        Node nodo = NodeFactory.FromFile(args[1]); // Po
 
                         // 2
-                        IConverter<BinaryFormat, SCRIPT.DAT.SCRIPT> ScriptConverter = new SCRIPT.DAT.BinaryFormat2Script { };
-                        Node nodoScript = nodo.Transform(ScriptConverter);
-
-                        // 3
                         IConverter<Po, BinaryFormat> ScriptAndPoConverter = new SCRIPT.DAT.PoAndScript2BinaryFormat
                         {
-                            Result = nodoScript.Format
+                            FileName = args[2] 
                         };
-
+                        
+                        nodo.Transform<Po2Binary, BinaryFormat, Po>();
+                        Node nodoScript = nodo.Transform(ScriptAndPoConverter);
+                        
+                        //3
+                        Console.WriteLine("Importing " + args[1] + "...");
+                        string file = args[1].Remove(args[1].Length - 3);
+                        nodoScript.Stream.WriteTo(file + "_new.DAT");
                     }
                     break;
                 case "-export_fad":

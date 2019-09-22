@@ -57,8 +57,8 @@ namespace Pleinair.SCRIPT.DAT
                 result.Blocks.Add(Reader.ReadBytes(result.Sizes[i]));
             }
 
-            //Only for test
-            DumpBlocks();
+            //Only for debug purposes
+            //DumpBlocks();
 
 
             return result;
@@ -71,7 +71,7 @@ namespace Pleinair.SCRIPT.DAT
 
         private int CalculateHeaderSize()
         {
-            return (result.Count * 4) * 2;
+            return ((result.Count * 4) * 2) + 4;
         }
 
         private void DumpBlocks()
