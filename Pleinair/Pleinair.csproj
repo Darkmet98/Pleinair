@@ -125,6 +125,7 @@
     <Compile Include="Images\BinaryFormat2Palette.cs" />
     <Compile Include="Images\ImageFormat.cs" />
     <Compile Include="Images\ImageFormat2Binary.cs" />
+    <Compile Include="MapStringLib\Convert.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

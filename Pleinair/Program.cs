@@ -35,7 +35,7 @@ namespace Pleinair
         static void Main(string[] args)
         {
             Console.WriteLine("Pleinair — A disgaea toolkit for fantranslations by Darkmet98.\nVersion: 1.0");
-            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries and iltrof for Ykcmp compression and decompression.");
+            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib to c# and iltrof for Ykcmp compression and decompression.");
             Console.WriteLine("This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {

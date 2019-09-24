@@ -31,8 +31,6 @@ namespace Pleinair.TALKDAT
         private string Replaced { get; set; }
         private int size { get; set; }
         public Binary2Po BP { get; set; } 
-        private uint LOCALE_SYSTEM_DEFAULT => 0x0800;
-        private uint LCMAP_FULLWIDTH => 0x00800000;
         public ArrayList HeaderBlocks { get; set; }
         public ArrayList Blocks { get; set; }
         public DataReader OriginalFile { get; set; }
@@ -163,9 +161,7 @@ namespace Pleinair.TALKDAT
 
         public string ToFullWidth(string halfWidth)
         {
-            StringBuilder sb = new StringBuilder(256);
-            LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_FULLWIDTH, halfWidth, -1, sb, sb.Capacity);
-            return sb.ToString();
+            return MapStringLib.Convert.ToFullWidth(halfWidth);
         }
 
         private void WriteHeader(DataWriter writer)
@@ -217,10 +213,5 @@ namespace Pleinair.TALKDAT
             }
             return -1;
         }
-
-        //https://stackoverflow.com/questions/6434377/converting-zenkaku-characters-to-hankaku-and-vice-versa-in-c-sharp
-        //This is very usefull
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        private static extern int LCMapString(uint Locale, uint dwMapFlags, string lpSrcStr, int cchSrc, StringBuilder lpDestStr, int cchDest);
     }
 }
