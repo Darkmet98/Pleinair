@@ -1,0 +1,7 @@
+[START]=[START]\n
+[END]=\n[END]\n
+{00}{02}{01}=[CONFIRMATION0]\n
+{02}{01}=[CONFIRMATION]\n
+{14}{01}=[SELECTION]\n
+\n={00}\n
+{00}{01}=\n

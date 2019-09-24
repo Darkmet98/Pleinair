@@ -23,7 +23,6 @@ using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
 using System.Runtime.InteropServices;
-using MapStringLib;
 
 namespace Pleinair.TALKDAT
 {

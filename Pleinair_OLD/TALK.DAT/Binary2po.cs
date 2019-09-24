@@ -22,7 +22,6 @@ using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
-using System.Text.Encodings;
 
 namespace Pleinair.TALKDAT
 {
@@ -36,7 +35,7 @@ namespace Pleinair.TALKDAT
         public List<int> Positions { get; set; }
         public List<String> TextPosition { get; set; }
         public List<int> Sizes { get; set; }
-        public static Encoding SJIS => CodePagesEncodingProvider.Instance.GetEncoding(932);
+        public static Encoding SJIS => Encoding.GetEncoding("shift_jis");
         private Dictionary<string, string> Map { get; set; }
         public string Texto { get; set; }
         private string SplitHeader { get; set; }

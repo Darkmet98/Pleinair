@@ -522,10 +522,6 @@ namespace Pleinair
             Console.WriteLine("Export TALK.DAT to Po: Pleinair.exe -export_talkdat \"TALK.DAT\"");
             Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_talkdat \"TALK.po\" \"TALK.DAT\"");
 
-            Console.WriteLine("\nSCRIPT.DAT");
-            Console.WriteLine("Export SCRIPT.DAT to Po: Pleinair.exe -export_scriptdat \"SCRIPT.DAT\"");
-            Console.WriteLine("Import Po to SCRIPT.DAT: Pleinair.exe -import_scriptdat \"TALK.po\" \"SCRIPT.DAT\"");
-
             Console.WriteLine("\nANOTHER DAT");
             Console.WriteLine("Export DAT to Po: Pleinair.exe -export_dat \"CHAR_E.DAT\"");
             Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");

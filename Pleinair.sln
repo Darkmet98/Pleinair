@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28407.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pleinair", "Pleinair\Pleinair.csproj", "{B9560EC2-1052-4B75-BFF5-878D4719F512}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pleinair_OLD", "Pleinair_OLD\Pleinair_OLD.csproj", "{B9560EC2-1052-4B75-BFF5-878D4719F512}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pleinair", "Pleinair\Pleinair.csproj", "{01778B0E-2583-4D1E-8304-01C069A45543}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B9560EC2-1052-4B75-BFF5-878D4719F512}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9560EC2-1052-4B75-BFF5-878D4719F512}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9560EC2-1052-4B75-BFF5-878D4719F512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01778B0E-2583-4D1E-8304-01C069A45543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01778B0E-2583-4D1E-8304-01C069A45543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01778B0E-2583-4D1E-8304-01C069A45543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01778B0E-2583-4D1E-8304-01C069A45543}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

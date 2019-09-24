@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B9560EC2-1052-4B75-BFF5-878D4719F512}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Pleinair.OLD</RootNamespace>
+    <AssemblyName>Pleinair_NetFramework</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <ReleaseVersion>1.0</ReleaseVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MapStringLib">
+      <HintPath>Dll\MapStringLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Composition.AttributedModel, Version=1.0.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Composition.AttributedModel.1.2.0\lib\netstandard2.0\System.Composition.AttributedModel.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=1.0.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Composition.Convention.1.2.0\lib\netstandard2.0\System.Composition.Convention.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=1.0.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Composition.Hosting.1.2.0\lib\netstandard2.0\System.Composition.Hosting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=1.0.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Composition.Runtime.1.2.0\lib\netstandard2.0\System.Composition.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=1.0.33.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Composition.TypedParts.1.2.0\lib\netstandard2.0\System.Composition.TypedParts.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Texim">
+      <HintPath>Dll\Texim.dll</HintPath>
+    </Reference>
+    <Reference Include="Yarhl, Version=2.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Yarhl.2.0.0.1\lib\netstandard2.0\Yarhl.dll</HintPath>
+    </Reference>
+    <Reference Include="Yarhl.Media, Version=2.0.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Yarhl.Media.2.0.0.1\lib\netstandard2.0\Yarhl.Media.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DAT\Export\Binary2po_CHARHELP.cs" />
+    <Compile Include="DAT\Export\Binary2po_CHAR_E.cs" />
+    <Compile Include="DAT\Binary2po_common.cs" />
+    <Compile Include="DAT\Export\Binary2po_DUNGEON.cs" />
+    <Compile Include="DAT\Export\Binary2po_GE.cs" />
+    <Compile Include="DAT\Export\Binary2po_GEOCUBE.cs" />
+    <Compile Include="DAT\Export\Binary2po_HABIT.cs" />
+    <Compile Include="DAT\Export\Binary2po_MAGIC.cs" />
+    <Compile Include="DAT\Export\Binary2po_MITEM.cs" />
+    <Compile Include="DAT\Export\Binary2po_MUSICSHOP.cs" />
+    <Compile Include="DAT\Export\Binary2po_THIEF.cs" />
+    <Compile Include="DAT\Export\Binary2po_WISH.cs" />
+    <Compile Include="DAT\Export\Binary2po_ZUKAN.cs" />
+    <Compile Include="DAT\Import\Po2binary_CHARHELP.cs" />
+    <Compile Include="DAT\Import\Po2binary_CHAR_E.cs" />
+    <Compile Include="DAT\Import\Po2binary_DUNGEON.cs" />
+    <Compile Include="DAT\Import\Po2binary_GE.cs" />
+    <Compile Include="DAT\Import\Po2binary_GEOCUBE.cs" />
+    <Compile Include="DAT\Import\Po2binary_HABIT.cs" />
+    <Compile Include="DAT\Import\Po2binary_MAGIC.cs" />
+    <Compile Include="DAT\Import\Po2binary_MITEM.cs" />
+    <Compile Include="DAT\Import\Po2binary_MUSICSHOP.cs" />
+    <Compile Include="DAT\Import\Po2binary_THIEF.cs" />
+    <Compile Include="DAT\Import\Po2binary_WISH.cs" />
+    <Compile Include="DAT\Import\Po2binary_ZUKAN.cs" />
+    <Compile Include="DAT\Po2binary_common.cs" />
+    <Compile Include="FAD\BinaryFormat2Fad.cs" />
+    <Compile Include="FAD\FAD.cs" />
+    <Compile Include="FAD\Fad2NodeContainer.cs" />
+    <Compile Include="FAD\Fad2BinaryFormat.cs" />
+    <Compile Include="Images\BinaryFormat2ImageFormat.cs" />
+    <Compile Include="Images\BinaryFormat2Palette.cs" />
+    <Compile Include="Images\ImageFormat.cs" />
+    <Compile Include="Images\ImageFormat2Binary.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SCRIPT.DAT\PoAndScript2BinaryFormat.cs" />
+    <Compile Include="SCRIPT.DAT\Script2po.cs" />
+    <Compile Include="SCRIPT.DAT\BinaryFormat2Script.cs" />
+    <Compile Include="SCRIPT.DAT\SCRIPT.cs" />
+    <Compile Include="TALK.DAT\Binary2po.cs" />
+    <Compile Include="TALK.DAT\po2Binary.cs" />
+    <Compile Include="ELF\Binary2po.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ELF\po2Binary.cs" />
+    <Compile Include="YKCMP\Export.cs" />
+    <Compile Include="YKCMP\Import.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icon.ico" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\ykcmp.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 y x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
