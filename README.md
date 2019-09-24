@@ -1,12 +1,12 @@
 ![Pleinair](https://github.com/Darkmet98/Pleinair/blob/master/PleinairBanner.jpg?raw=true)
 # Pleinair
-A simple and complete tool to translate disgaea games
+A simple and complete tool to translate Disgaea games.
 
 # Note
 This program are under development, wait for the final release.
 
 # Usage
-Work in progres...
+Work in progress...
 
 # Supported games
 * Disgaea 1 PC
