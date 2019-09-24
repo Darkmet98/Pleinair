@@ -3,7 +3,7 @@
 A simple and complete tool to translate Disgaea games.
 
 # Note
-This program are under development, wait for the final release.
+This program is under development, wait for the final release.
 
 # Usage
 Work in progress...
