@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using Pleinair.YKCMP;
 using Yarhl.FileFormat;
 using Yarhl.FileSystem;
 using Yarhl.IO;
@@ -388,18 +389,19 @@ namespace Pleinair
                         Console.WriteLine("Exporting " + args[1] + "...");
                         if (!Directory.Exists(args[1])) Directory.CreateDirectory(args[1].Remove(args[1].Length-4));
 
-                        YKCMP.Export.WriteExe();
                         foreach (var child in Navigator.IterateNodes(nodoContainer))
                         {
                             if (child.Stream == null)
                                 continue;
+
                             string output = Path.Combine(args[1].Remove(args[1].Length - 4) + "\\" + child.Name);
-                            child.Stream.WriteTo(output);
-                            YKCMP.Export.ExportFile(output, output.Remove(output.Length - 7) + ".YKCMP");
-                            ExportImage(output.Remove(output.Length - 7) + ".YKCMP");
-                            File.Delete(output);
+                            output = output.Remove(output.Length - 7);
+                            
+                            Node decompressedNode = child.Transform<YkcmpDecompression, BinaryFormat, BinaryFormat>();
+                            decompressedNode.Stream.WriteTo(output + ".YKCMP");
+
+                            ExportImage(output + ".YKCMP");
                         }
-                        YKCMP.Export.DeleteExe();
                     }
                     break;
                 case "-import_fad":
@@ -412,18 +414,20 @@ namespace Pleinair
                         IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad { };
                         Node nodoScript = nodo.Transform(FadConverter);
 
-                        YKCMP.Export.WriteExe();
                         foreach (var image in Directory.GetFiles(args[2], "*.png"))
                         {
                             ImportImage(image.Remove(image.Length - 4) + ".YKCMP", image);
-                            YKCMP.Import.ImportFile(image.Remove(image.Length - 4) + "_new.YKCMP", image.Remove(image.Length - 4) + ".YKCMPC");
+
+                            using BinaryFormat binaryFormat = new BinaryFormat(image.Remove(image.Length - 4) + "_new.YKCMP");
+                            BinaryFormat compressed = binaryFormat.ConvertWith<YkcmpCompression, BinaryFormat, BinaryFormat>();
+                            compressed.Stream.WriteTo(image.Remove(image.Length - 4) + ".YKCMPC");
                         }
-                        YKCMP.Export.DeleteExe();
 
                         Node nodeFoler = NodeFactory.FromDirectory(args[2], "*.YKCMPC");
 
                         // 3
-                        IConverter<FAD.FAD, BinaryFormat> BinaryFormatConverter = new FAD.Fad2BinaryFormat {
+                        IConverter<FAD.FAD, BinaryFormat> BinaryFormatConverter = new FAD.Fad2BinaryFormat
+                        {
                             Container = nodeFoler
                         };
                         Node nodoBF = nodoScript.Transform(BinaryFormatConverter);
@@ -437,17 +441,17 @@ namespace Pleinair
                 case "-decompress":
                     if (File.Exists(args[1]))
                     {
-                        YKCMP.Export.WriteExe();
-                        YKCMP.Export.ExportFile(args[1], args[1] + ".decompressed");
-                        YKCMP.Export.DeleteExe();
+                        using var binaryFormat = new BinaryFormat(args[1]);
+                        BinaryFormat decompressed = binaryFormat.ConvertWith<YkcmpDecompression, BinaryFormat, BinaryFormat>();
+                        decompressed.Stream.WriteTo(args[1] + ".decompressed");
                     }
                     break;
                 case "-compress":
                     if (File.Exists(args[1]))
                     {
-                        YKCMP.Export.WriteExe();
-                        YKCMP.Import.ImportFile(args[1], args[1].Remove(args[1].Length - 13));
-                        YKCMP.Export.DeleteExe();
+                        using var binaryFormat = new BinaryFormat(args[1]);
+                        BinaryFormat compressed = binaryFormat.ConvertWith<YkcmpCompression, BinaryFormat, BinaryFormat>();
+                        compressed.Stream.WriteTo(args[1].Remove(args[1].Length - 13));
                     }
                     break;
                 case "-export_image":
@@ -467,11 +471,9 @@ namespace Pleinair
 
         private static void ExportImage(string file)
         {
-            using (var binaryFormat = new BinaryFormat(file))
-            {
-                Images.ImageFormat image = binaryFormat.ConvertWith<Images.BinaryFormat2ImageFormat, BinaryFormat, Images.ImageFormat>();
-                image.Pixels.CreateBitmap(image.Palette, 0).Save(file.Remove(file.Length - 6) + ".png");
-            }
+            using var binaryFormat = new BinaryFormat(file);
+            Images.ImageFormat image = binaryFormat.ConvertWith<Images.BinaryFormat2ImageFormat, BinaryFormat, Images.ImageFormat>();
+            image.Pixels.CreateBitmap(image.Palette, 0).Save(file.Remove(file.Length - 6) + ".png");
         }
 
         private static void ImportImage(string originalFile, string pngFile)
