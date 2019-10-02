@@ -394,7 +394,7 @@ namespace Pleinair
                             if (child.Stream == null)
                                 continue;
 
-                            string output = Path.Combine(args[1].Remove(args[1].Length - 4) + "\\" + child.Name);
+                            string output = Path.Combine(args[1].Remove(args[1].Length - 4) + Path.DirectorySeparatorChar + child.Name);
                             output = output.Remove(output.Length - 7);
                             
                             Node decompressedNode = child.Transform<YkcmpDecompression, BinaryFormat, BinaryFormat>();
@@ -414,21 +414,34 @@ namespace Pleinair
                         IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad { };
                         Node nodoScript = nodo.Transform(FadConverter);
 
-                        foreach (var image in Directory.GetFiles(args[2], "*.png"))
+                        string[] fileArray = Directory.GetFiles(args[2], "*.png");
+                        
+                        Array.Sort(fileArray);
+                        
+                        
+                        foreach (var image in fileArray)
                         {
                             ImportImage(image.Remove(image.Length - 4) + ".YKCMP", image);
-
                             using BinaryFormat binaryFormat = new BinaryFormat(image.Remove(image.Length - 4) + "_new.YKCMP");
                             BinaryFormat compressed = binaryFormat.ConvertWith<YkcmpCompression, BinaryFormat, BinaryFormat>();
                             compressed.Stream.WriteTo(image.Remove(image.Length - 4) + ".YKCMPC");
                         }
 
-                        Node nodeFoler = NodeFactory.FromDirectory(args[2], "*.YKCMPC");
+                        Node nodeFolder = NodeFactory.CreateContainer("Ykcmp");
+                        
+                        string[] ykcmpFileArray = Directory.GetFiles(args[2], "*.YKCMPC");
+                        Array.Sort(ykcmpFileArray);
 
+                        foreach (var ykcmp in ykcmpFileArray)
+                        {
+                            Node nodoYkcmp = NodeFactory.FromFile(ykcmp);
+                            nodeFolder.Add(nodoYkcmp);
+                        }
+                        
                         // 3
                         IConverter<FAD.FAD, BinaryFormat> BinaryFormatConverter = new FAD.Fad2BinaryFormat
                         {
-                            Container = nodeFoler
+                            Container = nodeFolder
                         };
                         Node nodoBF = nodoScript.Transform(BinaryFormatConverter);
 
