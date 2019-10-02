@@ -36,7 +36,7 @@ namespace Pleinair
         static void Main(string[] args)
         {
             Console.WriteLine("Pleinair — A disgaea toolkit for fantranslations by Darkmet98.\nVersion: 1.0");
-            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib to c# and iltrof for Ykcmp compression and decompression.");
+            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.");
             Console.WriteLine("This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
@@ -531,31 +531,27 @@ namespace Pleinair
 
         private static void ShowInfo()
         {
-            Console.WriteLine("\nUsage: Pleinar.exe <-export/-import/-export_elf>");
+            Console.WriteLine("\nUsage: Pleinar <function> \"File1\" \"File2\"");
 
             Console.WriteLine("\nTALK.DAT");
-            Console.WriteLine("Export TALK.DAT to Po: Pleinair.exe -export_talkdat \"TALK.DAT\"");
-            Console.WriteLine("Import Po to TALK.DAT: Pleinair.exe -import_talkdat \"TALK.po\" \"TALK.DAT\"");
+            Console.WriteLine("Export TALK.DAT to Po: Pleinair -export_talkdat \"TALK.DAT\"");
+            Console.WriteLine("Import Po to TALK.DAT: Pleinair -import_talkdat \"TALK.po\" \"TALK.DAT\"");
 
             Console.WriteLine("\nSCRIPT.DAT");
-            Console.WriteLine("Export SCRIPT.DAT to Po: Pleinair.exe -export_scriptdat \"SCRIPT.DAT\"");
-            Console.WriteLine("Import Po to SCRIPT.DAT: Pleinair.exe -import_scriptdat \"TALK.po\" \"SCRIPT.DAT\"");
+            Console.WriteLine("Export SCRIPT.DAT to Po: Pleinair -export_scriptdat \"SCRIPT.DAT\"");
+            Console.WriteLine("Import Po to SCRIPT.DAT: Pleinair -import_scriptdat \"SCRIPT.po\" \"SCRIPT.DAT\"");
 
             Console.WriteLine("\nANOTHER DAT");
-            Console.WriteLine("Export DAT to Po: Pleinair.exe -export_dat \"CHAR_E.DAT\"");
-            Console.WriteLine("Import Po to DAT: Pleinair.exe -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
+            Console.WriteLine("Export DAT to Po: Pleinair -export_dat \"CHAR_E.DAT\"");
+            Console.WriteLine("Import Po to DAT: Pleinair -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
 
             Console.WriteLine("\nExecutable");
-            Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair.exe -export_elf \"dis1_st.exe\"");
-            Console.WriteLine("Import the Po to dis1_st.exe: Pleinair.exe -import_elf \"dis1_st.po\" \"dis1_st.exe\"");
+            Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair -export_elf \"dis1_st.exe\"");
+            Console.WriteLine("Import the Po to dis1_st.exe: Pleinair -import_elf \"dis1_st.po\" \"dis1_st.exe\"");
 
             Console.WriteLine("\nFAD Files");
-            Console.WriteLine("Export Fad file: Pleinair.exe -export_fad \"ANMDAT.FAD\"");
-            Console.WriteLine("Import Fad file: Pleinair.exe -import_fad \"ANMDAT.FAD\" \"ANMDAT\"");
-
-            Console.WriteLine("\nYKCMP Files");
-            Console.WriteLine("Decompress YKCMP file manually: Pleinair.exe -decompress \"0.YKCMP\"");
-            Console.WriteLine("Compress YKCMP file manually: Pleinair.exe -compress \"0.YKCMP.decompressed\"");
+            Console.WriteLine("Export Fad file: Pleinair -export_fad \"ANMDAT.FAD\"");
+            Console.WriteLine("Import Fad file: Pleinair -import_fad \"ANMDAT.FAD\" \"ANMDAT\"");
         }
     }
 }
