@@ -3,7 +3,7 @@
     "Pleinair": {
       "commandName": "Executable",
       "executablePath": "C:\\Users\\iinfe\\source\\repos\\Darkmet98\\Pleinair\\Pleinair\\bin\\Debug\\netcoreapp3.0\\win-x64\\Pleinair.exe",
-      "commandLineArgs": "-export_elf dis1_st.exe"
+      "commandLineArgs": "-import_elf dis1_st.po dis1_st.exe"
     }
   }
 }

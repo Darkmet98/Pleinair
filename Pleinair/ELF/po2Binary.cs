@@ -17,6 +17,8 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Text;
+using Pleinair.Exceptions;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
@@ -24,14 +26,18 @@ namespace Pleinair.ELF
 {
     class po2Binary : IConverter<Po, BinaryFormat>
     {
-        private TALKDAT.po2Binary PB { get; set; }
-        private Binary2Po BP { get; set; }
+        private TALKDAT.po2Binary PB { get; }
+        private Binary2Po BP { get; }
         public DataReader OriginalFile { get; set; }
         public po2Binary()
         {
             PB = new TALKDAT.po2Binary();
             BP = new Binary2Po();
         }
+
+        private DataWriter Writer;
+        private long Position { get; set; }
+        private Po Source { get; set; }
 
         public BinaryFormat Convert(Po source)
         {
@@ -42,97 +48,159 @@ namespace Pleinair.ELF
                 PB.BP.GenerateFontMap("TextArea.map");
             }
 
+            Source = source;
+
             //Generate the exported file
             BinaryFormat binary = new BinaryFormat();
-            var writer = new DataWriter(binary.Stream);
+            Writer = new DataWriter(binary.Stream);
 
             //Dump the original executable to the stream
-            OriginalFile.Stream.WriteTo(writer.Stream);
+            OriginalFile.Stream.WriteTo(Writer.Stream);
 
             //Go to the first block
-            InsertText(writer, source);
+            InsertText();
 
 
             return new BinaryFormat(binary.Stream);
         }
 
-        private void InsertText(DataWriter writer, Po source)
+        private void InsertText()
+        {
+            Writer.Stream.Position = 0x144670;
+            Writer.Write("JP");
+            //Block 1 & 2
+            Writer.Stream.Position = 0x151FFC;
+            Position = 0x144674;
+            WriteBlock(0x8BA, true, true);
+            //Block 3
+            Writer.Stream.Position = 0x1ACA00;
+            WriteBlock(0x34, false, false, 0x8BA);
+            //Block 4
+            Writer.Stream.Position = 0x137448;
+            WriteBlock(0x2, false, false, 0x8BA+0x34, new []{0xFDD97});
+            //Block 5
+            Writer.Stream.Position = 0x3FDBA;
+            WriteText(0x8BA + 0x34 + 0x2, false);
+            //Block 6
+            Writer.Stream.Position = 0x3F9FA;
+            WriteText(0x8BA + 0x34 + 0x2 + 0x1, true);
+            //Block 7
+            Writer.Stream.Position = 0x40C61;
+            WriteText(0x8BA + 0x34 + 0x2 + 0x1 + 0x1, true, new []{ 0x40C7C , 0x410C4, 0x410DF, 0x4130F, 0x4132A });
+
+        }
+
+
+        private void WriteBlock(int size, bool sjis, bool block12=false, int poPos=0, int[] positions=null)
         {
 
-            long position = 0x144674;
-            int positiontext;
-            writer.Stream.Position = 0x144670;
-            writer.Write("JP");
-            writer.Stream.Position = 0x151FFC;
-
-            for (int i = 0; i < 0x8BA; i++)
+            //Block 1 & 2
+            for (var i = 0; i < size; i++)
             {
-                //Go to the next block
-                if (i == 0x45F) writer.Stream.Position = 0x153194;
+                var posi = i + poPos;
+                if(block12)
+                    //Go to the next block
+                    if (i == 0x45F) Writer.Stream.Position = 0x153194;
 
 
-                if (BP.JapaneseStrings.Contains(i)) writer.Write((0x144670 + 0x401600)); //Japanese string
-                else if (BP.BadPointers.Contains(i)) writer.Stream.Position += 4; //Bad pointer
-                else {
-                    //Go to the string block zone
-                    writer.Stream.PushToPosition(position);
-
-                    //Check if the translation exists
-                    string Replaced = GetEntry(source, i);
-
-                    //Obtain the array of bytes
-                    byte[] encoded = GetArrayBytes(Replaced);
-
-
-                    if (encoded.Length % 4 == 0)
-                    {
-                        writer.Write(encoded);
-                        writer.Write((long)0x0);
-                    }
+                if (BP.JapaneseStrings.Contains(posi)) Writer.Write((0x144670 + 0x401600)); //Japanese string
+                else if (BP.BadPointers.Contains(posi)) Writer.Stream.Position += 4; //Bad pointer
+                else
+                {
+                    if(i+1 == size && positions!=null)
+                        WriteText(posi, sjis, positions);
                     else
-                    {
-                        writer.Write(encoded);
-                        int tempo = encoded.Length;
-                        do
-                        {
-                            writer.Write((byte)0x0);
-                            tempo++;
-                        }
-                        while (tempo % 4 != 0);
-                    }
-                    positiontext = (int)position;
-                    position = writer.Stream.Position;
-                    writer.Stream.PopPosition();
-                    writer.Write(positiontext+0x401600);
+                        WriteText(posi, sjis);
                 }
             }
         }
 
-        private string GetEntry(Po source, int value)
+        private void WriteText(int posi, bool sjis, int[] positions=null)
         {
-            foreach (var text in source.Entries)
+            //Go to the string block zone
+            Writer.Stream.PushToPosition(Position);
+
+            //Check if the translation exists
+            string replaced = GetEntry(posi, sjis);
+
+            //Obtain the array of bytes
+            byte[] encoded = GetArrayBytes(replaced, sjis);
+
+
+            if (encoded.Length % 4 == 0)
+            {
+                Writer.Write(encoded);
+                Writer.Write((long)0x0);
+            }
+            else
+            {
+                Writer.Write(encoded);
+                int tempo = encoded.Length;
+                do
+                {
+                    Writer.Write((byte)0x0);
+                    tempo++;
+                }
+                while (tempo % 4 != 0);
+            }
+
+            if (Writer.Stream.Position > 0x151FFB)
+            {
+                for (int beep = 0; beep < 5; beep++)
+                    Console.Beep();
+
+                throw new ElfBlockExceeded();
+            }
+
+
+            int positionText = (int)Position;
+            Position = Writer.Stream.Position;
+            Writer.Stream.PopPosition();
+            Writer.Write(positionText + 0x401600);
+
+            if (positions != null)
+            {
+                foreach (var pos in positions)
+                {
+                    Writer.Stream.Position = pos;
+                    Writer.Write(positionText + 0x401600);
+                }
+            }
+        }
+
+        private string GetEntry(int value, bool sjis)
+        {
+            foreach (var text in Source.Entries)
             {
                 if (value.ToString() == text.Context)
                 {
-                    string Replaced = string.IsNullOrEmpty(text.Translated) ?
+                    string replaced = string.IsNullOrEmpty(text.Translated) ?
                         text.Original : text.Translated;
                     if (PB.BP.DictionaryEnabled)
-                        Replaced = PB.BP.ReplaceText(Replaced, false);
-                    return ReplaceText(PB.ToFullWidth(Replaced), true);
+                        replaced = PB.BP.ReplaceText(replaced, false);
+
+                    if(sjis)
+                        return ReplaceText(PB.ToFullWidth(replaced), true);
+                    
+                    return ReplaceText(replaced, true);
                 }
             }
             return null;
         }
 
-        public byte[] GetArrayBytes(string text)
+        public byte[] GetArrayBytes(string text, bool sjis)
         {
             List<Byte> result = new List<byte>();
+            byte[] stringtext;
 
-            foreach(var chara in text.ToCharArray())
+            foreach (var chara in text.ToCharArray())
             {
                 if (FullWidthCharacters.TryGetValue(chara, out ushort value)) result.AddRange(BitConverter.GetBytes(value));
                 else {
-                    byte[] stringtext = TALKDAT.Binary2Po.SJIS.GetBytes(new char[] { chara });
+                    if(sjis)
+                        stringtext = TALKDAT.Binary2Po.SJIS.GetBytes(new char[] { chara });
+                    else
+                        stringtext = Encoding.UTF8.GetBytes(new char[] { chara });
                     result.AddRange(stringtext);
                 }
             }
