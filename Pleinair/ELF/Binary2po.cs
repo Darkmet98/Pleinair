@@ -95,10 +95,30 @@ namespace Pleinair.ELF
              *
              */
 
+            //Dump save/load font
+            
+            //Half width
+            reader.Stream.Position = 0x3DAC8;
+            SizeBlock = 0x1;
+            DumpBlock(reader, po);
+
+            /*
+             * 3DAC8
+             * 3DAD2
+             * 3DB0A
+             */
+
+            //3fe2f
+
+            //Full width
+            reader.Stream.Position = 0x3DB18;
+            SizeBlock = 0x1;
+            DumpBlock(reader, po, true);
+
             return po;
         }
 
-        private void DumpBlock(DataReader reader, Po po)
+        private void DumpBlock(DataReader reader, Po po, bool fullWidth=false)
         {
             for (int i = 0; i < SizeBlock; i++)
             {
@@ -114,7 +134,7 @@ namespace Pleinair.ELF
                     DumpText(reader);
 
                     //Normalize the text
-                    NormalizeText();
+                    NormalizeText(fullWidth);
 
                     //Return to the original position
                     reader.Stream.PopPosition();
@@ -154,13 +174,16 @@ namespace Pleinair.ELF
             while (check != 00);
         }
 
-        private void NormalizeText()
+        private void NormalizeText(bool full)
         {
             for (int i = 0; i < Text.Count; i++)
             {
                 byte[] arraysjis = BitConverter.GetBytes(Text[i]);
                 string temp = TALKDAT.Binary2Po.SJIS.GetString(arraysjis);
-                TextNormalized += temp.Normalize(NormalizationForm.FormKC);
+                if (!full)
+                    TextNormalized += temp.Normalize(NormalizationForm.FormKC);
+                else
+                    TextNormalized += temp;
             }
             //Delete the /0/0
             TextNormalized = TextNormalized.Remove(TextNormalized.Length - 2);
