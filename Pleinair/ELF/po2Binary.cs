@@ -89,13 +89,13 @@ namespace Pleinair.ELF
             WriteBlock(0x34, false,true, false, 0x8BA);
             //Block 4
             Writer.Stream.Position = 0x137448;
-            WriteBlock(0x2, false,true, false, 0x8BA+0x34, new []{0xFDD97});
+            WriteBlock(0x2, false,true, false, 0x8BA+0x34, new []{0xFDD97, 0xFDD8D, 0x13744C});
             //Block 5
             Writer.Stream.Position = 0x3FDBA;
             WriteText(0x8BA + 0x34 + 0x2, false, true);
             //Block 6
             Writer.Stream.Position = 0x3F9FA;
-            WriteText(0x8BA + 0x34 + 0x2 + 0x1, true);
+            WriteText(0x8BA + 0x34 + 0x2 + 0x1, false, false, new []{0x3F9EA});
             //Block 7
             Writer.Stream.Position = 0x40C61;
             WriteText(0x8BA + 0x34 + 0x2 + 0x1 + 0x1, true,false, new []{ 0x40C7C , 0x410C4, 0x410DF, 0x4130F, 0x4132A });
