@@ -82,7 +82,6 @@ namespace Pleinair
                     break;
             }
         }
-
         private static void Export(string extension, string location)
         {
             switch (extension)
@@ -108,15 +107,18 @@ namespace Pleinair
 
             Console.WriteLine(@"DAT Files");
             Console.WriteLine(@"Export TALK.DAT to Po: Pleinair ""TALK.DAT""");
-            Console.WriteLine(@"Import Po to TALK.DAT: Pleinair ""TALK.DAT"" ""TALK.po""");
+            Console.WriteLine(@"Import Po to TALK.DAT: Pleinair ""TALK.po""");
+            Console.WriteLine(@"Import Po to TALK.DAT with custom location: Pleinair ""TALK.po"" ""folder/TALK.DAT""");
 
             Console.WriteLine(@"Executable");
             Console.WriteLine(@"Dump the dis1_st.exe's strings to Po: Pleinair ""dis1_st.exe""");
-            Console.WriteLine(@"Import the Po to dis1_st.exe: Pleinair ""dis1_st.exe"" ""dis1_st.po""");
+            Console.WriteLine(@"Import the Po to dis1_st.exe: Pleinair ""dis1_st.po""");
+            Console.WriteLine(@"Import the Po to dis1_st.exe with custom location: Pleinair ""dis1_st.po"" ""folder/dis1_st.exe""");
 
             Console.WriteLine(@"FAD Files");
             Console.WriteLine(@"Export Fad file: Pleinair ""ANMDAT.FAD""");
-            Console.WriteLine(@"Import Fad file: Pleinair ""ANMDAT.FAD"" ""ANMDAT""");
+            Console.WriteLine(@"Import Fad file: Pleinair ""ANMDAT""");
+            Console.WriteLine(@"Import Fad file with custom location: Pleinair ""ANMDAT"" ""folder/ANMDAT.FAD"" ");
         }
     }
 }
