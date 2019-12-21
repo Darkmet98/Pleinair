@@ -68,4 +68,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DAT\Common" />
+  </ItemGroup>
+
 </Project>
