@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,8 +11,7 @@
     <PackageProjectUrl>https://github.com/Darkmet98/Pleinair</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Darkmet98/Pleinair</RepositoryUrl>
     <StartupObject>Pleinair.Program</StartupObject>
-	<RuntimeIdentifiers>win-x64;win-x86;linux-x64;osx-x64</RuntimeIdentifiers>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
   </PropertyGroup>
 
   <ItemGroup>

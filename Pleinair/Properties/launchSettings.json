@@ -2,8 +2,8 @@
   "profiles": {
     "Pleinair": {
       "commandName": "Executable",
-      "executablePath": "C:\\Users\\iinfe\\source\\repos\\Darkmet98\\Pleinair\\Pleinair\\bin\\Debug\\netcoreapp3.0\\win-x64\\Pleinair.exe",
-      "commandLineArgs": "-import_elf dis1_st.po dis1_st.exe"
+      "executablePath": "/media/Datos/Escritorio/Pleinair/Pleinair/bin/Debug/netcoreapp3.0/linux-x64/publish/Pleinair",
+      "commandLineArgs": "CHARHELP.DAT export"
     }
   }
 }

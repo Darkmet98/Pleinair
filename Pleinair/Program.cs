@@ -16,22 +16,14 @@
 // along with Pleinair. If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
 using System.IO;
-using System.Text;
-using Pleinair.YKCMP;
-using Yarhl.FileFormat;
-using Yarhl.FileSystem;
-using Yarhl.IO;
-using Yarhl.Media.Text;
-using Texim;
+using Pleinair.Exceptions;
+using static Pleinair.Command;
 
 namespace Pleinair
 {
     class Program
     {
-        private static IConverter<BinaryFormat, Po> converter;
-        private static IConverter<Po, BinaryFormat> importer;
 
         static void Main(string[] args)
         {
@@ -43,515 +35,49 @@ namespace Pleinair
                 ShowInfo();
                 return;
             }
-            switch (args[0])
+            if(args.Length >= 1 && string.IsNullOrWhiteSpace(args[0]) && !File.Exists(args[0])) throw new FileDontExist();
+            var extension = Path.GetExtension(args[0]).ToUpper();
+            if(args.Length == 2 && string.IsNullOrWhiteSpace(args[1]) && 
+               (!File.Exists(args[1]) || 
+                (extension == ".FAD"  && !Directory.Exists(args[1])))) throw new FileDontExist();
+
+            switch (extension)
             {
-                case "-export_talkdat":
-                    if (File.Exists(args[1]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
-
-                        // 2
-                        converter = new TALKDAT.Binary2Po { };
-
-                        Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
-                        //3
-                        Console.WriteLine("Exporting " + args[1] + "...");
-
-                        string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
-                    }
+                case ".DAT":
+                    if(args.Length == 1)ExportDat(Path.GetFileName(args[0]).ToUpper(),
+                        args[0], Path.GetFileNameWithoutExtension(args[0]) + ".po");
+                     else ImportDat(Path.GetFileName(args[0]).ToUpper(), args[1], args[0], Path.GetFileNameWithoutExtension(args[0]) + "_new.dat"); 
                     break;
-                case "-import_talkdat":
-                    if (File.Exists(args[1]) && File.Exists(args[2]))
-                    {
-
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // Po
-
-                        // 2
-                        TALKDAT.po2Binary P2B = new TALKDAT.po2Binary
-                        {
-                            OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                            {
-                                DefaultEncoding = new UTF8Encoding(),
-                                Endianness = EndiannessMode.LittleEndian,
-                            }
-                        };
-
-                        nodo.Transform<Po2Binary, BinaryFormat, Po>();
-                        Node nodoDat = nodo.Transform<Po, BinaryFormat>(P2B);
-                        //3
-                        Console.WriteLine("Importing " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 4);
-                        nodoDat.Stream.WriteTo(file + "_new.DAT");
-                    }
+                case ".EXE":
+                    if(args.Length == 1)ExportElf(Path.GetFileName(args[0]).ToUpper(),
+                        args[0], Path.GetFileNameWithoutExtension(args[0]) + ".po");
+                    else ImportElf(Path.GetFileName(args[0]).ToUpper(), args[1], args[0], Path.GetFileNameWithoutExtension(args[0]) + "_new.exe"); 
                     break;
-                case "-export_elf":
-                    if (File.Exists(args[1]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
-
-                        // 2
-                        converter = new ELF.Binary2Po { };
-
-                        Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
-                        //3
-                        Console.WriteLine("Exporting " + args[1] + "...");
-
-                        string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
-                    }
+                case ".FAD":
+                    if(args.Length == 1)ExportFad(Path.GetFileName(args[0]).ToUpper(),
+                        args[0], Path.GetFileNameWithoutExtension(args[0]));
+                    else ImportFad(Path.GetFileName(args[0]).ToUpper(), args[1], args[0], Path.GetFileNameWithoutExtension(args[0]) + "_new.fad");
                     break;
-                case "-import_elf":
-                    if (File.Exists(args[1]))
-                    {
-
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // Po
-
-                        // 2
-                        ELF.po2Binary importer = new ELF.po2Binary
-                        {
-                            OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                            {
-                                DefaultEncoding = new UTF8Encoding(),
-                                Endianness = EndiannessMode.LittleEndian,
-                            }
-                        };
-
-                        nodo.Transform<Po2Binary, BinaryFormat, Po>();
-                        Node nodoDat = nodo.Transform<Po, BinaryFormat>(importer);
-                        //3
-                        Console.WriteLine("Importing " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 4);
-                        nodoDat.Stream.WriteTo(file + "_new.exe");
-                    }
-                    break;
-                case "-export_dat":
-                    if (File.Exists(args[1]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
-
-                        // 2
-                        switch(Path.GetFileName(args[1]).ToUpper())
-                        {
-                            case "CHAR_E.DAT":
-                                converter = new DAT.Binary2po_CHAR_E { };
-                                break;
-                            case "CHARHELP.DAT":
-                                converter = new DAT.Binary2po_CHARHELP { };
-                                break;
-                            case "DUNGEON.DAT":
-                                converter = new DAT.Binary2po_DUNGEON { };
-                                break;
-                            case "GE.DAT":
-                                converter = new DAT.Binary2po_GE { };
-                                break;
-                            case "GEOCUBE.DAT":
-                                converter = new DAT.Binary2po_GEOCUBE { };
-                                break;
-                            case "HABIT.DAT":
-                                converter = new DAT.Binary2po_HABIT { };
-                                break;
-                            case "MAGIC.DAT":
-                                converter = new DAT.Binary2po_MAGIC { };
-                                break;
-                            case "MITEM.DAT":
-                                converter = new DAT.Binary2po_MITEM { };
-                                break;
-                            case "MUSICSHOP.DAT":
-                                converter = new DAT.Binary2po_MUSICSHOP { };
-                                break;
-                            case "THIEF.DAT":
-                                converter = new DAT.Binary2po_THIEF { };
-                                break;
-                            case "WISH.DAT":
-                                converter = new DAT.Binary2po_WISH { };
-                                break;
-                            case "ZUKAN.DAT":
-                                converter = new DAT.Binary2po_ZUKAN { };
-                                break;
-                            default:
-                                //Exception
-                                break;
-                        }
-
-                        Node nodoPo = nodo.Transform<BinaryFormat, Po>(converter);
-                        //3
-                        Console.WriteLine("Exporting " + args[1] + "...");
-
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(Path.GetFileName(args[1]) + ".po");
-                    }
-                    break;
-                case "-import_dat":
-                    if (File.Exists(args[1]) && File.Exists(args[2]))
-                    {
-
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // Po
-
-                        // 2
-                        switch (Path.GetFileName(args[2]).ToUpper())
-                        {
-                            case "CHAR_E.DAT":
-                                importer = new DAT.Import.Po2binary_CHAR_E {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "CHARHELP.DAT":
-                                importer = new DAT.Import.Po2binary_CHARHELP
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "DUNGEON.DAT":
-                                importer = new DAT.Import.Po2binary_DUNGEON
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "GE.DAT":
-                                importer = new DAT.Import.Po2binary_GE
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "GEOCUBE.DAT":
-                                importer = new DAT.Import.Po2binary_GEOCUBE
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "HABIT.DAT":
-                                importer = new DAT.Import.Po2binary_HABIT
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "MAGIC.DAT":
-                                importer = new DAT.Import.Po2binary_MAGIC
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "MITEM.DAT":
-                                importer = new DAT.Import.Po2binary_MITEM
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "MUSICSHOP.DAT":
-                                importer = new DAT.Import.Po2binary_MUSICSHOP
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "THIEF.DAT":
-                                importer = new DAT.Import.Po2binary_THIEF
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "WISH.DAT":
-                                importer = new DAT.Import.Po2binary_WISH
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            case "ZUKAN.DAT":
-                                importer = new DAT.Import.Po2binary_ZUKAN
-                                {
-                                    OriginalFile = new DataReader(new DataStream(args[2], FileOpenMode.Read))
-                                    {
-                                        DefaultEncoding = new UTF8Encoding(),
-                                        Endianness = EndiannessMode.LittleEndian,
-                                    }
-                                };
-                                break;
-                            default:
-                                //Exception
-                                break;
-                        }
-
-                        nodo.Transform<Po2Binary, BinaryFormat, Po>();
-                        Node nodoDat = nodo.Transform<Po, BinaryFormat>(importer);
-                        //3
-                        Console.WriteLine("Importing " + args[2] + "...");
-                        string file = args[1].Remove(args[2].Length - 4);
-                        nodoDat.Stream.WriteTo(file + "_new.DAT");
-                    }
-                    break;
-
-                case "-export_scriptdat":
-                    if (File.Exists(args[1]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
-
-                        // 2
-                        IConverter<BinaryFormat, SCRIPT.DAT.SCRIPT> ScriptConverter = new SCRIPT.DAT.BinaryFormat2Script { };
-                        Node nodoScript = nodo.Transform(ScriptConverter);
-
-                        // 3
-                        IConverter<SCRIPT.DAT.SCRIPT, Po> PoConverter = new SCRIPT.DAT.Script2po { };
-                        Node nodoPo = nodoScript.Transform(PoConverter);
-
-                        //4
-                        Console.WriteLine("Exporting " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 4);
-                        nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(file + ".po");
-                    }
-                    break;
-
-                case "-import_scriptdat":
-                    if (File.Exists(args[1]) && File.Exists(args[2]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // Po
-
-                        // 2
-                        IConverter<Po, BinaryFormat> ScriptAndPoConverter = new SCRIPT.DAT.PoAndScript2BinaryFormat
-                        {
-                            FileName = args[2] 
-                        };
-                        
-                        nodo.Transform<Po2Binary, BinaryFormat, Po>();
-                        Node nodoScript = nodo.Transform(ScriptAndPoConverter);
-                        
-                        //3
-                        Console.WriteLine("Importing " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 3);
-                        nodoScript.Stream.WriteTo(file + "_new.DAT");
-                    }
-                    break;
-                case "-export_fad":
-                    if (File.Exists(args[1]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
-
-                        // 2
-                        IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad { };
-                        Node nodoScript = nodo.Transform(FadConverter);
-
-                        // 3
-                        IConverter<FAD.FAD,NodeContainerFormat> ContainerConverter = new FAD.Fad2NodeContainer { };
-                        Node nodoContainer = nodoScript.Transform(ContainerConverter);
-
-                        //4
-                        Console.WriteLine("Exporting " + args[1] + "...");
-                        if (!Directory.Exists(args[1])) Directory.CreateDirectory(args[1].Remove(args[1].Length-4));
-
-                        foreach (var child in Navigator.IterateNodes(nodoContainer))
-                        {
-                            if (child.Stream == null)
-                                continue;
-
-                            string output = Path.Combine(args[1].Remove(args[1].Length - 4) + Path.DirectorySeparatorChar + child.Name);
-                            output = output.Remove(output.Length - 7);
-                            
-                            Node decompressedNode = child.Transform<YkcmpDecompression, BinaryFormat, BinaryFormat>();
-                            decompressedNode.Stream.WriteTo(output + ".YKCMP");
-
-                            ExportImage(output + ".YKCMP");
-                        }
-                    }
-                    break;
-                case "-import_fad":
-                    if (File.Exists(args[1]) && Directory.Exists(args[2]))
-                    {
-                        // 1
-                        Node nodo = NodeFactory.FromFile(args[1]); // BinaryFormat
-
-                        // 2
-                        IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad { };
-                        Node nodoScript = nodo.Transform(FadConverter);
-
-                        string[] fileArray = Directory.GetFiles(args[2], "*.png");
-                        
-                        Array.Sort(fileArray);
-                        
-                        
-                        foreach (var image in fileArray)
-                        {
-                            ImportImage(image.Remove(image.Length - 4) + ".YKCMP", image);
-                            using BinaryFormat binaryFormat = new BinaryFormat(image.Remove(image.Length - 4) + "_new.YKCMP");
-                            BinaryFormat compressed = binaryFormat.ConvertWith<YkcmpCompression, BinaryFormat, BinaryFormat>();
-                            compressed.Stream.WriteTo(image.Remove(image.Length - 4) + ".YKCMPC");
-                        }
-
-                        Node nodeFolder = NodeFactory.CreateContainer("Ykcmp");
-                        
-                        string[] ykcmpFileArray = Directory.GetFiles(args[2], "*.YKCMPC");
-                        Array.Sort(ykcmpFileArray);
-
-                        foreach (var ykcmp in ykcmpFileArray)
-                        {
-                            Node nodoYkcmp = NodeFactory.FromFile(ykcmp);
-                            nodeFolder.Add(nodoYkcmp);
-                        }
-                        
-                        // 3
-                        IConverter<FAD.FAD, BinaryFormat> BinaryFormatConverter = new FAD.Fad2BinaryFormat
-                        {
-                            Container = nodeFolder
-                        };
-                        Node nodoBF = nodoScript.Transform(BinaryFormatConverter);
-
-                        //4
-                        Console.WriteLine("Importing " + args[1] + "...");
-                        string file = args[1].Remove(args[1].Length - 4);
-                        nodoBF.Stream.WriteTo(file + "_new.FAD");
-                    }
-                    break;
-                case "-decompress":
-                    if (File.Exists(args[1]))
-                    {
-                        using var binaryFormat = new BinaryFormat(args[1]);
-                        BinaryFormat decompressed = binaryFormat.ConvertWith<YkcmpDecompression, BinaryFormat, BinaryFormat>();
-                        decompressed.Stream.WriteTo(args[1] + ".decompressed");
-                    }
-                    break;
-                case "-compress":
-                    if (File.Exists(args[1]))
-                    {
-                        using var binaryFormat = new BinaryFormat(args[1]);
-                        BinaryFormat compressed = binaryFormat.ConvertWith<YkcmpCompression, BinaryFormat, BinaryFormat>();
-                        compressed.Stream.WriteTo(args[1].Remove(args[1].Length - 13));
-                    }
-                    break;
-                case "-export_image":
-                    if (File.Exists(args[1]))
-                    {
-                        ExportImage(args[1]);
-                    }
-                    break;
-                case "-import_image":
-                    if (File.Exists(args[1]) && File.Exists(args[2]))
-                    {
-                        ImportImage(args[1], args[2]);
-                    }
-                    break;
+                default:
+                    throw new FileNotSupported();
             }
         }
-
-        private static void ExportImage(string file)
-        {
-            using var binaryFormat = new BinaryFormat(file);
-            Images.ImageFormat image = binaryFormat.ConvertWith<Images.BinaryFormat2ImageFormat, BinaryFormat, Images.ImageFormat>();
-            image.Pixels.CreateBitmap(image.Palette, 0).Save(file.Remove(file.Length - 6) + ".png");
-        }
-
-        private static void ImportImage(string originalFile, string pngFile)
-        {
-            Console.WriteLine("Importing " + originalFile + "...");
-            //Example taken from texim
-
-            // Load palette to force colors when importing
-            Node palette = NodeFactory.FromFile(originalFile);
-            palette.Transform<Images.BinaryFormat2Palette, BinaryFormat, Palette>();
-
-            Bitmap newImage = (Bitmap)Image.FromFile(pngFile);
-            
-            var quantization = new Texim.Processing.FixedPaletteQuantization(palette.GetFormatAs<Palette>().GetPalette(0))
-            {};
-
-            Texim.ImageConverter importer = new Texim.ImageConverter
-            {
-                Format = ColorFormat.Indexed_8bpp,
-                PixelEncoding = PixelEncoding.Lineal,
-                Quantization = quantization
-            };
-
-            (Palette _, PixelArray pixelInfo) = importer.Convert(newImage);
-            // Save the new pixel info
-            Node newPixels = new Node("pxInfo", pixelInfo);
-
-            IConverter<PixelArray, BinaryFormat> ImageConverter = new Images.ImageFormat2Binary
-            {
-                OriginalFile = new DataReader(new DataStream(originalFile, FileOpenMode.Read))
-                {
-                    DefaultEncoding = new UTF8Encoding(),
-                    Endianness = EndiannessMode.LittleEndian,
-                }
-            };
-            Node nodoImage = newPixels.Transform(ImageConverter);
-
-
-            string file = originalFile.Remove(originalFile.Length - 6);
-            nodoImage.GetFormatAs<BinaryFormat>().Stream.WriteTo(file + "_new.YKCMP");
-        }
-
+        
         private static void ShowInfo()
         {
-            Console.WriteLine("\nUsage: Pleinar <function> \"File1\" \"File2\"");
+            Console.WriteLine("\nUsage: Pleinar \"File1\" \"File2\"");
 
-            Console.WriteLine("\nTALK.DAT");
-            Console.WriteLine("Export TALK.DAT to Po: Pleinair -export_talkdat \"TALK.DAT\"");
-            Console.WriteLine("Import Po to TALK.DAT: Pleinair -import_talkdat \"TALK.po\" \"TALK.DAT\"");
-
-            Console.WriteLine("\nSCRIPT.DAT");
-            Console.WriteLine("Export SCRIPT.DAT to Po: Pleinair -export_scriptdat \"SCRIPT.DAT\"");
-            Console.WriteLine("Import Po to SCRIPT.DAT: Pleinair -import_scriptdat \"SCRIPT.po\" \"SCRIPT.DAT\"");
-
-            Console.WriteLine("\nANOTHER DAT");
-            Console.WriteLine("Export DAT to Po: Pleinair -export_dat \"CHAR_E.DAT\"");
-            Console.WriteLine("Import Po to DAT: Pleinair -import_dat \"CHAR_E.po\" \"CHAR_E.DAT\"");
+            Console.WriteLine("\nDAT Files");
+            Console.WriteLine("Export TALK.DAT to Po: Pleinair \"TALK.DAT\"");
+            Console.WriteLine("Import Po to TALK.DAT: Pleinair \"TALK.DAT\" \"TALK.po\"");
 
             Console.WriteLine("\nExecutable");
-            Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair -export_elf \"dis1_st.exe\"");
-            Console.WriteLine("Import the Po to dis1_st.exe: Pleinair -import_elf \"dis1_st.po\" \"dis1_st.exe\"");
+            Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair \"dis1_st.exe\"");
+            Console.WriteLine("Import the Po to dis1_st.exe: Pleinair \"dis1_st.exe\" \"dis1_st.po\"");
 
             Console.WriteLine("\nFAD Files");
-            Console.WriteLine("Export Fad file: Pleinair -export_fad \"ANMDAT.FAD\"");
-            Console.WriteLine("Import Fad file: Pleinair -import_fad \"ANMDAT.FAD\" \"ANMDAT\"");
+            Console.WriteLine("Export Fad file: Pleinair \"ANMDAT.FAD\"");
+            Console.WriteLine("Import Fad file: Pleinair \"ANMDAT.FAD\" \"ANMDAT\"");
         }
     }
 }
