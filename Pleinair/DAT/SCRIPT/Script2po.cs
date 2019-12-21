@@ -30,9 +30,11 @@ namespace Pleinair.SCRIPT.DAT
 
         public Script2po()
         {
+            //Read the language used by the user' OS, this way the editor can spellcheck the translation. - Thanks Liquid_S por the code
+            System.Globalization.CultureInfo currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             po = new Po
             {
-                Header = new PoHeader("Disgaea", "dummy@dummy.com", "en-US")
+                Header = new PoHeader("Disgaea", "dummy@dummy.com", currentCulture.Name)
             };
         }
 

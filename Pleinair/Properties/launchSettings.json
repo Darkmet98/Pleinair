@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Pleinair": {
+      "commandName": "Executable",
+      "executablePath": "/media/Datos/Escritorio/Pleinair/Pleinair/bin/Debug/netcoreapp3.0/linux-x64/publish/Pleinair",
+      "commandLineArgs": "CHARHELP.DAT export"
+    }
+  }
+}
