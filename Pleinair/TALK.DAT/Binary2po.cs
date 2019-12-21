@@ -281,7 +281,7 @@ namespace Pleinair.TALKDAT
             catch (Exception e)
             {
                 Console.Beep();
-                Console.WriteLine("The dictionary is wrong, please, check the readme and fix it.");
+                Console.WriteLine(@"The dictionary is wrong, please, check the readme and fix it.");
                 Console.WriteLine(e);
                 System.Environment.Exit(-1);
             }

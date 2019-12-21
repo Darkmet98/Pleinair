@@ -37,7 +37,7 @@ namespace Pleinair
             var nodo = NodeFactory.FromFile(path); //BinaryFormat
             Node nodoPo = null;
             IConverter<BinaryFormat, Po> nodeConverter = null;
-            Console.WriteLine("Exporting " + name + "...");
+            Console.WriteLine(@"Exporting " + name + @"...");
             switch (name)
             {
                 //Disgaea 1
@@ -98,12 +98,12 @@ namespace Pleinair
             var nodo = NodeFactory.FromFile(pathPo); //Po
             Node nodoOut = null;
             IConverter<Po, BinaryFormat> importer = null;
-            Console.WriteLine("Importing " + name + "...");
-            switch (name)
+            Console.WriteLine(@"Importing " + name + @"...");
+            switch (name+".DAT")
             {
                 case "TALK.DAT":
                     
-                    TALKDAT.po2Binary P2B = new TALKDAT.po2Binary
+                    TALKDAT.po2Binary p2B = new TALKDAT.po2Binary
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
                         {
@@ -113,7 +113,7 @@ namespace Pleinair
                     };
 
                     nodo.Transform<Po2Binary, BinaryFormat, Po>();
-                    nodoOut = nodo.Transform(P2B);
+                    nodoOut = nodo.Transform(p2B);
                     break;
                 
                 case "SCRIPT.DAT":
@@ -248,12 +248,13 @@ namespace Pleinair
                     throw new DatNotSupported();
             }
             
-            if (name != "TALK.DAT" || name != "SCRIPT.DAT")
+            if (name != "TALK.DAT" && name != "SCRIPT.DAT")
             {
                 nodo.Transform<Po2Binary, BinaryFormat, Po>();
                 nodoOut = nodo.Transform(importer);
             }
-            nodoOut.Stream.WriteTo(outFile);
+
+            if (nodoOut != null) nodoOut.Stream.WriteTo(outFile);
         }
         public static void ExportImage(string file)
         {
@@ -263,7 +264,7 @@ namespace Pleinair
         }
         public static void ImportImage(string originalFile, string pngFile)
         {
-            Console.WriteLine("Importing " + originalFile + "...");
+            Console.WriteLine(@"Importing " + originalFile + @"...");
             //Example taken from texim
 
             // Load palette to force colors when importing
@@ -272,8 +273,7 @@ namespace Pleinair
 
             Bitmap newImage = (Bitmap)Image.FromFile(pngFile);
             
-            var quantization = new Texim.Processing.FixedPaletteQuantization(palette.GetFormatAs<Palette>().GetPalette(0))
-            {};
+            var quantization = new Texim.Processing.FixedPaletteQuantization(palette.GetFormatAs<Palette>().GetPalette(0));
 
             Texim.ImageConverter importer = new Texim.ImageConverter
             {
@@ -286,7 +286,7 @@ namespace Pleinair
             // Save the new pixel info
             Node newPixels = new Node("pxInfo", pixelInfo);
 
-            IConverter<PixelArray, BinaryFormat> ImageConverter = new Images.ImageFormat2Binary
+            IConverter<PixelArray, BinaryFormat> imageConverter = new Images.ImageFormat2Binary
             {
                 OriginalFile = new DataReader(new DataStream(originalFile, FileOpenMode.Read))
                 {
@@ -294,7 +294,7 @@ namespace Pleinair
                     Endianness = EndiannessMode.LittleEndian,
                 }
             };
-            Node nodoImage = newPixels.Transform(ImageConverter);
+            Node nodoImage = newPixels.Transform(imageConverter);
 
 
             string file = originalFile.Remove(originalFile.Length - 6);
@@ -303,9 +303,9 @@ namespace Pleinair
         public static void ExportElf(string name, string path, string outFile)
         {
             Node nodo = NodeFactory.FromFile(path); // BinaryFormat
-            IConverter<BinaryFormat, Po> converter = new ELF.Binary2Po { };
+            IConverter<BinaryFormat, Po> converter = new ELF.Binary2Po();
             Node nodoPo = nodo.Transform(converter);
-            Console.WriteLine("Exporting " + name + "...");
+            Console.WriteLine(@"Exporting " + name + @"...");
             nodoPo.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(outFile);
         }
         public static void ImportElf(string name, string pathPo, string pathBf, string outFile)
@@ -321,7 +321,7 @@ namespace Pleinair
             };
             nodo.Transform<Po2Binary, BinaryFormat, Po>();
             Node nodoDat = nodo.Transform(importer);
-            Console.WriteLine("Importing " + name + "...");
+            Console.WriteLine(@"Importing " + name + @"...");
             nodoDat.Stream.WriteTo(outFile);
         }
         public static void ExportFad(string name, string path, string outFolder)
@@ -338,8 +338,8 @@ namespace Pleinair
             Node nodoContainer = nodoScript.Transform(containerConverter);
 
             //4
-            Console.WriteLine("Exporting " + name + "...");
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            Console.WriteLine(@"Exporting " + name + @"...");
+            if (!Directory.Exists(Path.GetFileNameWithoutExtension(path))) Directory.CreateDirectory(Path.GetFileNameWithoutExtension(path) ?? throw new Exception("That's not supossed to throw a exception lol, please make a issue if you read this line."));
 
             foreach (var child in Navigator.IterateNodes(nodoContainer))
             {
@@ -358,8 +358,8 @@ namespace Pleinair
             Node nodo = NodeFactory.FromFile(pathBf); // BinaryFormat
 
             // 2
-            IConverter<BinaryFormat, FAD.FAD> FadConverter = new FAD.BinaryFormat2Fad();
-            Node nodoScript = nodo.Transform(FadConverter);
+            IConverter<BinaryFormat, FAD.FAD> fadConverter = new FAD.BinaryFormat2Fad();
+            Node nodoScript = nodo.Transform(fadConverter);
 
             string[] fileArray = Directory.GetFiles(pathFolder, "*.png");
             
@@ -393,7 +393,7 @@ namespace Pleinair
             Node nodoBf = nodoScript.Transform(binaryFormatConverter);
 
             //4
-            Console.WriteLine("Importing " + name + "...");
+            Console.WriteLine(@"Importing " + name + @"...");
             nodoBf.Stream.WriteTo(outFile);
         }
     }

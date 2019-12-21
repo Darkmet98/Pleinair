@@ -27,57 +27,96 @@ namespace Pleinair
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Pleinair — A disgaea toolkit for fantranslations by Darkmet98.\nVersion: 1.0");
-            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.");
-            Console.WriteLine("This program is licensed with a GPL V3 license.");
+            Console.WriteLine(@"Pleinair - A disgaea toolkit for fantranslations by Darkmet98. Version: 1.0");
+            Console.WriteLine(@"Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.");
+            Console.WriteLine(@"This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
                 ShowInfo();
                 return;
             }
-            if(args.Length >= 1 && string.IsNullOrWhiteSpace(args[0]) && !File.Exists(args[0])) throw new FileDontExist();
-            var extension = Path.GetExtension(args[0]).ToUpper();
-            if(args.Length == 2 && string.IsNullOrWhiteSpace(args[1]) && 
-               (!File.Exists(args[1]) || 
-                (extension == ".FAD"  && !Directory.Exists(args[1])))) throw new FileDontExist();
-
+            if(args.Length == 2 && string.IsNullOrWhiteSpace(args[0]) && 
+               (!File.Exists(args[0]) || 
+                (Path.GetExtension(args[0])?.ToUpper() == ".FAD"  && !Directory.Exists(args[0])))) throw new FileDontExist();
+            var extension = Path.GetExtension(args[0])?.ToUpper();
+            var originalFile = args.Length == 1
+                ? Path.GetFileNameWithoutExtension(args[0])
+                : Path.GetFileNameWithoutExtension(args[1]);
             switch (extension)
             {
                 case ".DAT":
-                    if(args.Length == 1)ExportDat(Path.GetFileName(args[0]).ToUpper(),
-                        args[0], Path.GetFileNameWithoutExtension(args[0]) + ".po");
-                     else ImportDat(Path.GetFileName(args[0]).ToUpper(), args[1], args[0], Path.GetFileNameWithoutExtension(args[0]) + "_new.dat"); 
-                    break;
                 case ".EXE":
-                    if(args.Length == 1)ExportElf(Path.GetFileName(args[0]).ToUpper(),
-                        args[0], Path.GetFileNameWithoutExtension(args[0]) + ".po");
-                    else ImportElf(Path.GetFileName(args[0]).ToUpper(), args[1], args[0], Path.GetFileNameWithoutExtension(args[0]) + "_new.exe"); 
-                    break;
                 case ".FAD":
-                    if(args.Length == 1)ExportFad(Path.GetFileName(args[0]).ToUpper(),
-                        args[0], Path.GetFileNameWithoutExtension(args[0]));
-                    else ImportFad(Path.GetFileName(args[0]).ToUpper(), args[1], args[0], Path.GetFileNameWithoutExtension(args[0]) + "_new.fad");
+                    Export(extension, args[0]);
+                    break;
+                case ".PO":
+                    if (File.Exists(originalFile + ".DAT")) extension = ".DAT";
+                    else if(File.Exists(originalFile + ".exe")) extension = ".exe";
+                    else throw new FileDontExist();
+                    Import(extension, args[0], originalFile);
                     break;
                 default:
-                    throw new FileNotSupported();
+                    if (Directory.Exists(args[0]))
+                    {
+                        if (File.Exists(originalFile + ".FAD")) extension = ".FAD";
+                        else throw new FileDontExist();
+                        Import(extension, args[0], originalFile);
+                    }
+                    else throw new FileNotSupported();
+                    break;
+            }
+        }
+
+        private static void Import(string extension, string locationPo, string locationOr)
+        {
+            switch (extension)
+            {
+                case ".DAT":
+                    ImportDat(Path.GetFileName(locationOr)?.ToUpper(), locationPo,locationOr+".DAT", locationOr + "_new.dat"); 
+                    break;
+                case ".exe":
+                    ImportElf(Path.GetFileName(locationOr)?.ToUpper(), locationPo, locationOr+".exe", locationOr + "_new.exe");
+                    break;
+                case ".FAD":
+                    ImportFad(Path.GetFileName(locationOr)?.ToUpper(), locationPo, locationOr+".FAD", locationOr + "_new.fad");
+                    break;
+            }
+        }
+
+        private static void Export(string extension, string location)
+        {
+            switch (extension)
+            {
+                case ".DAT":
+                    ExportDat(Path.GetFileName(location)?.ToUpper(),
+                        location, Path.GetFileNameWithoutExtension(location) + ".po");
+                    break;
+                case ".EXE":
+                    ExportElf(Path.GetFileName(location)?.ToUpper(),
+                        location, Path.GetFileNameWithoutExtension(location) + ".po");
+                    break;
+                case ".FAD":
+                    ExportFad(Path.GetFileName(location)?.ToUpper(),
+                        location, Path.GetFileNameWithoutExtension(location));
+                    break;
             }
         }
         
         private static void ShowInfo()
         {
-            Console.WriteLine("\nUsage: Pleinar \"File1\" \"File2\"");
+            Console.WriteLine(@"Usage: Pleinar ""File1"" ""File2""");
 
-            Console.WriteLine("\nDAT Files");
-            Console.WriteLine("Export TALK.DAT to Po: Pleinair \"TALK.DAT\"");
-            Console.WriteLine("Import Po to TALK.DAT: Pleinair \"TALK.DAT\" \"TALK.po\"");
+            Console.WriteLine(@"DAT Files");
+            Console.WriteLine(@"Export TALK.DAT to Po: Pleinair ""TALK.DAT""");
+            Console.WriteLine(@"Import Po to TALK.DAT: Pleinair ""TALK.DAT"" ""TALK.po""");
 
-            Console.WriteLine("\nExecutable");
-            Console.WriteLine("Dump the dis1_st.exe's strings to Po: Pleinair \"dis1_st.exe\"");
-            Console.WriteLine("Import the Po to dis1_st.exe: Pleinair \"dis1_st.exe\" \"dis1_st.po\"");
+            Console.WriteLine(@"Executable");
+            Console.WriteLine(@"Dump the dis1_st.exe's strings to Po: Pleinair ""dis1_st.exe""");
+            Console.WriteLine(@"Import the Po to dis1_st.exe: Pleinair ""dis1_st.exe"" ""dis1_st.po""");
 
-            Console.WriteLine("\nFAD Files");
-            Console.WriteLine("Export Fad file: Pleinair \"ANMDAT.FAD\"");
-            Console.WriteLine("Import Fad file: Pleinair \"ANMDAT.FAD\" \"ANMDAT\"");
+            Console.WriteLine(@"FAD Files");
+            Console.WriteLine(@"Export Fad file: Pleinair ""ANMDAT.FAD""");
+            Console.WriteLine(@"Import Fad file: Pleinair ""ANMDAT.FAD"" ""ANMDAT""");
         }
     }
 }
