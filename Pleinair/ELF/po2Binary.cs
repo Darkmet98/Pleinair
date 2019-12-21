@@ -219,7 +219,7 @@ namespace Pleinair.ELF
             Writer.Write((byte)0x73);
 
             //Change the do While Size
-            var fontEntry = Source.Entries[^1];
+            var fontEntry = Source.Entries[Source.Entries.Count-1];
 
 
             string font = string.IsNullOrEmpty(fontEntry.Translated) ?

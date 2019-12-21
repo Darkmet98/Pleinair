@@ -22,7 +22,6 @@ using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
-using System.Text.Encodings;
 
 namespace Pleinair.TALKDAT
 {
