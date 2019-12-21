@@ -41,7 +41,7 @@ namespace Pleinair
             var extension = Path.GetExtension(args[0])?.ToUpper();
             var originalFile = args.Length == 1
                 ? Path.GetFileNameWithoutExtension(args[0])
-                : Path.GetFileNameWithoutExtension(args[1]);
+                : Path.GetDirectoryName(args[1]) + Path.DirectorySeparatorChar +  Path.GetFileNameWithoutExtension(args[1]);
             switch (extension)
             {
                 case ".DAT":

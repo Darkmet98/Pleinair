@@ -7,25 +7,23 @@ This program is under development, wait for the final release.
 
 # Usage
 
-## TALK.DAT
-* Export TALK.DAT to Po: Pleinair -export_talkdat "TALK.DAT"
-* Import Po to TALK.DAT: Pleinair -import_talkdat "TALK.po" "TALK.DAT"
+## Drag and drop
+You can drag and drop the dat, po, exe or fad files on to Pleinair executable without open any command prompt.
 
-## SCRIPT.DAT
-* Export SCRIPT.DAT to Po: Pleinair -export_scriptdat "SCRIPT.DAT"
-* Import Po to SCRIPT.DAT: Pleinair -import_scriptdat "SCRIPT.po" "SCRIPT.DAT"
-
-## Another DAT
-* Export DAT to Po: Pleinair -export_dat "CHAR_E.DAT"
-* Import Po to DAT: Pleinair -import_dat "CHAR_E.po" "CHAR_E.DAT"
+## DAT Files
+* Export DAT to Po: Pleinair "CHAR_E.DAT"
+* Import Po to DAT: Pleinair "CHAR_E.po"
+* Import Po to TALK.DAT with custom location: Pleinair "TALK.po" "folder/TALK.DAT"
 
 ## Executable
-* Dump the dis1_st.exe's strings to Po: Pleinair -export_elf "dis1_st.exe"
-* Import the Po to dis1_st.exe: Pleinair -import_elf "dis1_st.po" "dis1_st.exe"
+* Dump the dis1_st.exe's strings to Po: Pleinair "dis1_st.exe"
+* Import the Po to dis1_st.exe: Pleinair "dis1_st.po"
+* Import the Po to dis1_st.exe with custom location: Pleinair "dis1_st.po" "folder/dis1_st.exe"
 
 ## FAD Files
-* Export Fad file: Pleinair -export_fad "ANMDAT.FAD"
-* Import Fad file: Pleinair -import_fad "ANMDAT.FAD" "ANMDAT"
+* Export Fad file: Pleinair "ANMDAT.FAD"
+* Import Fad file: Pleinair "ANMDAT"
+* Import Fad file with custom location: Pleinair "ANMDAT" "folder/ANMDAT.FAD"
 
 ## Modify MAP files to change values on import and export functions
 Work in progress..

@@ -99,9 +99,9 @@ namespace Pleinair
             Node nodoOut = null;
             IConverter<Po, BinaryFormat> importer = null;
             Console.WriteLine(@"Importing " + name + @"...");
-            switch (name+".DAT")
+            switch (name)
             {
-                case "TALK.DAT":
+                case "TALK":
                     
                     TALKDAT.po2Binary p2B = new TALKDAT.po2Binary
                     {
@@ -116,7 +116,7 @@ namespace Pleinair
                     nodoOut = nodo.Transform(p2B);
                     break;
                 
-                case "SCRIPT.DAT":
+                case "SCRIPT":
                     IConverter<Po, BinaryFormat> scriptAndPoConverter = new SCRIPT.DAT.PoAndScript2BinaryFormat
                     {
                         FileName = pathBf
@@ -125,7 +125,7 @@ namespace Pleinair
                     nodoOut = nodo.Transform(scriptAndPoConverter);
                     break;
                 
-                case "CHAR_E.DAT":
+                case "CHAR_E":
                     importer = new DAT.Import.Po2binary_CHAR_E {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
                         {
@@ -134,7 +134,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "CHARHELP.DAT":
+                case "CHARHELP":
                     importer = new DAT.Import.Po2binary_CHARHELP
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -144,7 +144,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "DUNGEON.DAT":
+                case "DUNGEON":
                     importer = new DAT.Import.Po2binary_DUNGEON
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -154,7 +154,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "GE.DAT":
+                case "GE":
                     importer = new DAT.Import.Po2binary_GE
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -164,7 +164,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "GEOCUBE.DAT":
+                case "GEOCUBE":
                     importer = new DAT.Import.Po2binary_GEOCUBE
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -174,7 +174,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "HABIT.DAT":
+                case "HABIT":
                     importer = new DAT.Import.Po2binary_HABIT
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -184,7 +184,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "MAGIC.DAT":
+                case "MAGIC":
                     importer = new DAT.Import.Po2binary_MAGIC
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -194,7 +194,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "MITEM.DAT":
+                case "MITEM":
                     importer = new DAT.Import.Po2binary_MITEM
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -204,7 +204,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "MUSICSHOP.DAT":
+                case "MUSICSHOP":
                     importer = new DAT.Import.Po2binary_MUSICSHOP
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -214,7 +214,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "THIEF.DAT":
+                case "THIEF":
                     importer = new DAT.Import.Po2binary_THIEF
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -224,7 +224,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "WISH.DAT":
+                case "WISH":
                     importer = new DAT.Import.Po2binary_WISH
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -234,7 +234,7 @@ namespace Pleinair
                         }
                     };
                     break;
-                case "ZUKAN.DAT":
+                case "ZUKAN":
                     importer = new DAT.Import.Po2binary_ZUKAN
                     {
                         OriginalFile = new DataReader(new DataStream(pathBf, FileOpenMode.Read))
@@ -248,7 +248,7 @@ namespace Pleinair
                     throw new DatNotSupported();
             }
             
-            if (name != "TALK.DAT" && name != "SCRIPT.DAT")
+            if (name != "TALK" && name != "SCRIPT")
             {
                 nodo.Transform<Po2Binary, BinaryFormat, Po>();
                 nodoOut = nodo.Transform(importer);

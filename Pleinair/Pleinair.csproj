@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/Darkmet98/Pleinair</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Darkmet98/Pleinair</RepositoryUrl>
     <StartupObject>Pleinair.Program</StartupObject>
-	<RuntimeIdentifier>linux-x64</RuntimeIdentifier>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	<LangVersion>latest</LangVersion>
   </PropertyGroup>
 
