@@ -37,9 +37,11 @@ namespace Pleinair.ELF
 
         public Po Convert(BinaryFormat source)
         {
+            //Read the language used by the user' OS, this way the editor can spellcheck the translation. - Thanks Liquid_S por the code
+            System.Globalization.CultureInfo currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             Po po = new Po
             {
-                Header = new PoHeader("Disgaea", "dummy@dummy.com", "en-US")
+                Header = new PoHeader("Disgaea", "dummy@dummy.com", currentCulture.Name)
             };
 
             var reader = new DataReader(source.Stream)
