@@ -20,6 +20,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using Pleinair.DAT.StringListDatabase;
 using Pleinair.Exceptions;
 using Pleinair.YKCMP;
 using Texim;
@@ -38,6 +39,7 @@ namespace Pleinair
             Node nodoPo = null;
             IConverter<BinaryFormat, Po> nodeConverter = null;
             Console.WriteLine(@"Exporting " + name + @"...");
+            Node nodoScript;
             switch (name)
             {
                 //Disgaea 1
@@ -46,7 +48,7 @@ namespace Pleinair
                     break;
                 case "SCRIPT.DAT":
                     IConverter<BinaryFormat, SCRIPT.DAT.SCRIPT> scriptConverter = new SCRIPT.DAT.BinaryFormat2Script();
-                    Node nodoScript = nodo.Transform(scriptConverter);
+                    nodoScript = nodo.Transform(scriptConverter);
                     IConverter<SCRIPT.DAT.SCRIPT, Po> poConverter = new SCRIPT.DAT.Script2po();
                     nodoPo = nodoScript.Transform(poConverter);
                     break;
@@ -86,10 +88,19 @@ namespace Pleinair
                 case "ZUKAN.DAT":
                     nodeConverter = new DAT.Binary2po_ZUKAN();
                     break;
+                
+                //Disgaea 2
+                case "STRINGLISTDATABASE.DAT":
+                    IConverter<BinaryFormat, Stringlistdatabase> sldConverter = new Binary2StringListDatabase();
+                    nodoScript = nodo.Transform(sldConverter);
+                    IConverter<Stringlistdatabase, Po> poConv = new StringListDatabase2Po();
+                    nodoPo = nodoScript.Transform(poConv);
+                    break;
+                
                 default:
                     throw new DatNotSupported();
             }
-            if(name != "SCRIPT.DAT") nodoPo = nodo.Transform(nodeConverter);
+            if(name != "SCRIPT.DAT" && name != "STRINGLISTDATABASE.DAT") nodoPo = nodo.Transform(nodeConverter);
             nodoPo?.Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(outFile);
             
         }
