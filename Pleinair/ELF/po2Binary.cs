@@ -73,7 +73,7 @@ namespace Pleinair.ELF
             InsertText();
 
             //Fix font padding
-            FixFontLoading();
+            FixFontAsciiWidth();
 
             return new BinaryFormat(binary.Stream);
         }
@@ -258,8 +258,11 @@ namespace Pleinair.ELF
             return result.ToArray();
         }
 
-        private void FixFontLoading()
+
+        private void FixFontAsciiWidth()
         {
+            //Fixes the ASCII loading width forcing the game to convert always ascii to SJIS.
+            //Thanks Pleonex for researching with me this function
             Writer.Stream.Position = 0xF2E26;
             Writer.Write(0x2);
         }
