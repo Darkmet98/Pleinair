@@ -72,6 +72,8 @@ namespace Pleinair.ELF
             //Go to the first block
             InsertText();
 
+            //Fix font padding
+            FixFontLoading();
 
             return new BinaryFormat(binary.Stream);
         }
@@ -254,6 +256,12 @@ namespace Pleinair.ELF
             }
 
             return result.ToArray();
+        }
+
+        private void FixFontLoading()
+        {
+            Writer.Stream.Position = 0xF2E26;
+            Writer.Write(0x2);
         }
 
         private Dictionary<string, string> Variables = new Dictionary<string, string>()
