@@ -100,16 +100,7 @@ namespace Pleinair.DAT
        {
            if (!string.IsNullOrEmpty(line))
            {
-               //Write the padding
-               Writer.WriteTimes(0x0, size);
-               //Save the current position
-               Writer.Stream.PushCurrentPosition();
-               //Return to the original position
-               Writer.Stream.Position -= size;
-               //Write the translation
-               Writer.Write(BP_TalkDat.ReplaceText(line, false), false, TALKDAT.Binary2Po.SJIS, size);
-               //Return to the last position
-               Writer.Stream.PopPosition();
+               Writer.Write(BP_TalkDat.ReplaceText(line, false), size, true, TALKDAT.Binary2Po.SJIS);
            }
            else
            {
