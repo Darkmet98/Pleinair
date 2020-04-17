@@ -96,17 +96,17 @@ namespace Pleinair.DAT
        { }
 
 
-       protected void WriteText(int size, string line)
+       protected void WriteText(int size, string line, bool clean=false)
        {
            if (!string.IsNullOrEmpty(line))
-           {
                Writer.Write(BP_TalkDat.ReplaceText(line, false), size, true, TALKDAT.Binary2Po.SJIS);
-           }
+
+           else if (clean) 
+               Writer.WriteTimes(0,size);
+           
            else
-           {
                Writer.Stream.Position += size;
-           }
-            
+
        }
 
        private void GenerateFile()
