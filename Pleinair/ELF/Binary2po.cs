@@ -136,8 +136,6 @@ namespace Pleinair.ELF
                     DumpText(reader);
 
                     //Normalize the text
-                    if(i == 658)
-                        System.Console.Write("hola");
                     NormalizeText(fullWidth);
 
                     //Return to the original position
