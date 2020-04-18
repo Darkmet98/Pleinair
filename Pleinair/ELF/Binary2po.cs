@@ -136,6 +136,8 @@ namespace Pleinair.ELF
                     DumpText(reader);
 
                     //Normalize the text
+                    if(i == 658)
+                        System.Console.Write("hola");
                     NormalizeText(fullWidth);
 
                     //Return to the original position
@@ -182,8 +184,10 @@ namespace Pleinair.ELF
             {
                 byte[] arraysjis = BitConverter.GetBytes(Text[i]);
                 string temp = TALKDAT.Binary2Po.SJIS.GetString(arraysjis);
-                if (!full)
+                if (!full && !japaneseChars.Contains(temp))
+                {
                     TextNormalized += temp.Normalize(NormalizationForm.FormKC);
+                }
                 else
                     TextNormalized += temp;
             }
@@ -278,6 +282,18 @@ namespace Pleinair.ELF
             860, 864, 868, 891, 909, 1116, 1117, 1153, 1163, 1196,
             1224, 1425, 1535, 1585, 1617, 1620, 1634, 1740, 1780,
             1855, 1869, 1977, 1978, 2027
+        };
+
+        private List<string> japaneseChars = new List<string>()
+        {
+            "⑮",
+            "⑯",
+            "⑰",
+            "⑱",
+            "⑲",
+            "⑳",
+            "Ⅰ",
+            "Ⅱ"
         };
 
         //Variables

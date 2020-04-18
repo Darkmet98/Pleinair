@@ -2,7 +2,7 @@
   "profiles": {
     "Pleinair": {
       "commandName": "Project",
-      "commandLineArgs": "SCRIPT.po"
+      "commandLineArgs": "dis1_st.exe"
     }
   }
 }
