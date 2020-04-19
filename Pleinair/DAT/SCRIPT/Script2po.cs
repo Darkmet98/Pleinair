@@ -53,7 +53,7 @@ namespace Pleinair.SCRIPT.DAT
                     
                     for(int e = 0; e < source.Blocks[i].Length; e++)
                     {
-                        if (i != 1698)
+                        if (!SpecialTextBlocks.Contains(i))
                         {
                             if (source.Blocks[i][e] == 0x32 && source.Blocks[i][e - 1] == 0xBE && !textdump) textdump = true;
                         }
@@ -118,9 +118,13 @@ namespace Pleinair.SCRIPT.DAT
         //Text blocks
         public static List<int> TextBlocks = new List<int>()
         {
-           1375, 1488, 1537, 1687, 1698, 1793, 1958, 2025, 2122, 2257, 2357, 2373, 2510, 2779
+           1375, 1488, 1537, 1687, 1698, 1793, 1805, 1958, 2025, 2122, 2257, 2357, 2373, 2510, 2779
         };
 
+        private List<int> SpecialTextBlocks = new List<int>()
+        {
+            1805, 1698
+        };
     }
 }
 
