@@ -123,7 +123,7 @@ namespace Pleinair.SCRIPT.DAT
 
         private List<int> SpecialTextBlocks = new List<int>()
         {
-            1805, 1698
+            1805, 1698, 2373
         };
     }
 }
