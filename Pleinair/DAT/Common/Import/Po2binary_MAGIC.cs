@@ -37,7 +37,7 @@ namespace Pleinair.DAT.Import
             for (int i = 0; i < NameStrings.Count; i++)
             {
                 Writer.Stream.Position += BP_Common.ValuesLength;
-                WriteText(BP_Common.NameLength, NameStrings[i]);
+                WriteText(BP_Common.NameLength, NameStrings[i], false, true);
                 Writer.Stream.Position += BP_Common.PaddingLength;
                 WriteText(BP_Common.DescriptionLength, DescriptionStrings[i]);
                 Writer.Stream.Position += BP_Common.PaddingLength;
