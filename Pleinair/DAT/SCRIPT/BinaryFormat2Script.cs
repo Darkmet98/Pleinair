@@ -83,7 +83,7 @@ namespace Pleinair.SCRIPT.DAT
                 var stream = new System.IO.FileStream("Debug/" + i.ToString() + ".bin",System.IO.FileMode.OpenOrCreate);
                 stream.Write(result.Blocks[i], 0, result.Sizes[i]);
                 stream.Close();
-                positions += i + "=" + result.Positions[i] + "\n";
+                positions += i + "=" + System.Convert.ToString(result.Positions[i], 16) + "\n";
             }
             System.IO.File.WriteAllText("positions.txt", positions);
             System.IO.File.WriteAllBytes("Debug/TrashHeader.bin", result.TrashHeader);

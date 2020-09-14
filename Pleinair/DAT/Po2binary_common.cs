@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Pleinair.TALKDAT;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;
@@ -28,7 +29,8 @@ namespace Pleinair.DAT
     {
 
         protected Binary2po_common BP_Common;
-        protected TALKDAT.Binary2Po BP_TalkDat;
+        protected Binary2Po BP_TalkDat;
+        protected po2Binary PB_TalkDat;
         protected List<string> NameStrings;
         protected List<string> DescriptionStrings;
         public DataReader OriginalFile { get; set; }
@@ -39,7 +41,8 @@ namespace Pleinair.DAT
         public Po2binary_common()
         {
             BP_Common = new Binary2po_common();
-            BP_TalkDat = new TALKDAT.Binary2Po();
+            BP_TalkDat = new Binary2Po();
+            PB_TalkDat = new po2Binary();
         }
 
         public BinaryFormat Convert(Po source)
@@ -96,18 +99,21 @@ namespace Pleinair.DAT
        { }
 
 
-       protected void WriteText(int size, string line)
+       protected void WriteText(int size, string line, bool clean=false, bool fullWidth = false)
        {
-            //Write the padding
-            Writer.WriteTimes(0x0, size);
-            //Save the current position
-            Writer.Stream.PushCurrentPosition();
-            //Return to the original position
-            Writer.Stream.Position -= size;
-            //Write the translation
-            Writer.Write(BP_TalkDat.ReplaceText(line, false), false, TALKDAT.Binary2Po.SJIS, size);
-            //Return to the last position
-            Writer.Stream.PopPosition();
+           
+           if (!string.IsNullOrEmpty(line))
+           {
+                var result = BP_TalkDat.ReplaceText(line, false);
+                Writer.Write((!fullWidth) ? result : PB_TalkDat.ToFullWidth(result), size, false, TALKDAT.Binary2Po.SJIS);
+           }
+           
+           else if (clean) 
+               Writer.WriteTimes(0,size);
+           
+           else
+               Writer.Stream.Position += size;
+
        }
 
        private void GenerateFile()

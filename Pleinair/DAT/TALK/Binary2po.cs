@@ -149,7 +149,7 @@ namespace Pleinair.TALKDAT
         private void GetText(DataReader reader)
         {
             for (int i = 0; i < Count; i++)
-                {
+            {
                 reader.Stream.Position = Positions[i];
                 Console.Write("Exporting line " + i + " from " + (Count - 2) + "(position: 0x{0:X6}", Positions[i] + ")\n");
                 ParseText(reader, Sizes[i], i);

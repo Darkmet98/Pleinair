@@ -109,17 +109,33 @@ namespace Pleinair.SCRIPT.DAT
 
             for (int i = 0; i < block.Length; i++)
             {
-                if(block[i] == 0x32 && block[i - 1] == 0xBE)
+                if (PoLine >= Source.Entries.Count)
+                {
+                    Writer.Write(block[i]);
+                    continue;
+                }
+
+                var reference = Source.Entries[PoLine].Reference.Split('|');
+
+                if (block[i] == 0x32 && (block[i - 1] == 0xBE || reference[1] == "1"))
                 {
                     string poText = string.IsNullOrEmpty(Source.Entries[PoLine].Translated) ?
                     Source.Entries[PoLine].Original : Source.Entries[PoLine].Translated;
 
+                    if (poText != "<!empty>")
+                    {
+                        byte[][] result = ParseString(poText);
 
-                    byte[][] result = ParseString(poText);
+                        for (int e = 0; e < result.Length; e++)
+                            Writer.Write(result[e]);
+                        i += Int32.Parse(reference[0]) - 1;
 
-                    for (int e = 0; e < result.Length; e++)
-                        Writer.Write(result[e]);
-                    i += Int32.Parse(Source.Entries[PoLine].Reference)-1;
+                    }
+                    else
+                    {
+                        Writer.Write(block[i]);
+                    }
+
                     PoLine++;
                 }
                 else

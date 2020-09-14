@@ -72,6 +72,8 @@ namespace Pleinair.ELF
             //Go to the first block
             InsertText();
 
+            //Fix font padding
+            FixFontAsciiWidth();
 
             return new BinaryFormat(binary.Stream);
         }
@@ -256,19 +258,28 @@ namespace Pleinair.ELF
             return result.ToArray();
         }
 
+
+        private void FixFontAsciiWidth()
+        {
+            //Fixes the ASCII loading width forcing the game to convert always ascii to SJIS.
+            //Thanks Pleonex for researching with me this function
+            Writer.Stream.Position = 0xF2E26;
+            Writer.Write(0x2);
+        }
+
         private Dictionary<string, string> Variables = new Dictionary<string, string>()
         {
             {"％ｓ", "%s"},
             {"％ｘ", "%x"},
-            {"％ｄ％", "%d%"},
+            //{"％ｄ％", "%d%"},
             {"％ｄ", "%d"},
-            {"％３ｄ％", "%3d%"},
-            {"％０３ｄ％", "%03d%"},
+            //{"％３ｄ％", "%3d%"},
+            //{"％０３ｄ％", "%03d%"},
             {"％３ｄ", "%3d"},
             {"％２ｄ", "%2d"},
             {"％４ｄ", "%4d"},
             {"％０２ｄ", "%02d"},
-            {"％０３ｄ", "%03d"}
+            {"％０３ｄ", "%03d"},
         };
 
         private Dictionary<char, ushort> FullWidthCharacters = new Dictionary<char, ushort>()

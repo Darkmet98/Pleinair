@@ -23,9 +23,9 @@ namespace Pleinair.DAT.Import
     {
         public Po2binary_THIEF()
         {
-            BP_Common.NameLength = 0x18;
+            BP_Common.NameLength = 0x20;
             BP_Common.PaddingLength = 1;
-            BP_Common.ValuesLength = 8;
+            BP_Common.ValuesLength = 4;
             BP_Common.CountLength = 2;
         }
         public override void InsertText()
@@ -36,7 +36,7 @@ namespace Pleinair.DAT.Import
                 entry.Original : entry.Translated;
 
                 WriteText(BP_Common.NameLength, poText);
-                Writer.Stream.Position += BP_Common.PaddingLength;
+                //Writer.Stream.Position += BP_Common.PaddingLength;
                 Writer.Stream.Position += BP_Common.ValuesLength;
             }
         }

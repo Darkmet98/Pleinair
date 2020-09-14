@@ -23,7 +23,7 @@ namespace Pleinair.DAT.Import
         public Po2binary_MAGIC()
         {
             BP_Common.NameLength = 0x20;
-            BP_Common.DescriptionLength = 0x6E;
+            BP_Common.DescriptionLength = 0x70;
             BP_Common.PaddingLength = 1;
             BP_Common.ValuesLength = 8;
             BP_Common.Values2Length = 0x12;
@@ -37,12 +37,8 @@ namespace Pleinair.DAT.Import
             for (int i = 0; i < NameStrings.Count; i++)
             {
                 Writer.Stream.Position += BP_Common.ValuesLength;
-                WriteText(BP_Common.NameLength, NameStrings[i]);
-                //Fix for Usagi
-                if(i+1==NameStrings.Count)
-                    Writer.Stream.Position += BP_Common.PaddingLength;
-                else
-                    Writer.Stream.Position += BP_Common.PaddingLength+2;
+                WriteText(BP_Common.NameLength, NameStrings[i], false, true);
+                Writer.Stream.Position += BP_Common.PaddingLength;
                 WriteText(BP_Common.DescriptionLength, DescriptionStrings[i]);
                 Writer.Stream.Position += BP_Common.PaddingLength;
                 Writer.Stream.Position += BP_Common.Values2Length;

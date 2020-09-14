@@ -45,6 +45,7 @@ namespace Pleinair.SCRIPT.DAT
             int blocklength = 0;
             string text = "";
             bool textdump = false;
+            bool textdumpalt = false;
             for (int i = 0; i < source.Blocks.Count; i++)
             {
                 if (TextBlocks.Contains(i))
@@ -52,10 +53,17 @@ namespace Pleinair.SCRIPT.DAT
                     
                     for(int e = 0; e < source.Blocks[i].Length; e++)
                     {
-                        if (source.Blocks[i][e] == 0x32 && source.Blocks[i][e - 1] == 0xBE && !textdump)
-                            textdump = true;
+                        if (!SpecialTextBlocks.Contains(i))
+                        {
+                            if (source.Blocks[i][e] == 0x32 && source.Blocks[i][e - 1] == 0xBE && !textdump) textdump = true;
+                        }
+                        else
+                        {
+                            if (source.Blocks[i][e] == 0x32 && source.Blocks[i][e - 1] == 0 && !textdump)
+                                textdumpalt = true;
+                        }
 
-                        if(textdump)
+                        if(textdump || textdumpalt)
                         {
                             byte size = source.Blocks[i][e + 1];
                             byte[] arraysjis = new byte[size];
@@ -65,23 +73,26 @@ namespace Pleinair.SCRIPT.DAT
                             text += GetText(arraysjis) + "\n";
                         }
 
-                        if (textdump && 
+                        if (textdumpalt || (textdump && 
                            (source.Blocks[i][e+1] == 0x07 && source.Blocks[i][e + 2] == 0x0E ||
                             source.Blocks[i][e + 1] == 0x83 && source.Blocks[i][e + 2] == 0x03 ||
                            (source.Blocks[i][e+1] == 0x01 && (source.Blocks[i][e + 2] == 0x01 || 
-                            source.Blocks[i][e + 2] == 0x02))))
+                            source.Blocks[i][e + 2] == 0x02)))))
                         {
-                            textdump = false;
+                            
                             PoEntry entry = new PoEntry(); //Generate the entry on the po file
 
                             entry.Original = text.Remove(text.Length-1);
+                            var type = (textdump) ? "0" : "1";
                             entry.Context = "Block: " + block.ToString() + " Dialog: " + dialog;
-                            entry.Reference = blocklength.ToString();
+                            entry.Reference = blocklength.ToString() + "|" + type;
                             po.Add(entry);
 
                             text = "";
                             dialog++;
                             blocklength = 0;
+                            textdump = false;
+                            textdumpalt = false;
                         }
                     }
                     block++;
@@ -90,6 +101,9 @@ namespace Pleinair.SCRIPT.DAT
             }
             return po;
         }
+
+        
+
         protected string GetText(byte[] arraysjis)
         {
             //Get byte array 
@@ -104,9 +118,13 @@ namespace Pleinair.SCRIPT.DAT
         //Text blocks
         public static List<int> TextBlocks = new List<int>()
         {
-           1375, 1488, 1537, 1687, 1793, 1958, 2025, 2122, 2257, 2357, 2373, 2510, 2779
+           1375, 1488, 1537, 1687, 1698, 1793, 1805, 1958, 2025, 2122, 2257, 2357, 2373, 2510, 2779
         };
 
+        private List<int> SpecialTextBlocks = new List<int>()
+        {
+            1805, 1698, 2373
+        };
     }
 }
 

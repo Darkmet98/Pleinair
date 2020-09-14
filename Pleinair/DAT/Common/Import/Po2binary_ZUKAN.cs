@@ -45,7 +45,7 @@ namespace Pleinair.DAT.Import
                 for (int o = 0; o < 8; o++)
                 {
                     Writer.Stream.Position += 1;
-                    if (o < Lines.Count) WriteText(BP_Common.DescriptionLength, Lines[o]);
+                    if (o < Lines.Count) WriteText(BP_Common.DescriptionLength, Lines[o], true);
                     else Writer.WriteTimes(0x0, BP_Common.DescriptionLength);
                 }
                 Writer.Stream.Position += BP_Common.PaddingLength;
