@@ -58,7 +58,7 @@ namespace Pleinair.SCRIPT.DAT
             }
 
             //Only for debug purposes
-            //DumpBlocks();
+            DumpBlocks();
 
 
             return result;

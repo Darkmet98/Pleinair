@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Pedro Garau Martínez
+// Copyright (C) 2020 Pedro Garau Martínez
 //
 // This file is part of Pleinair.
 //
@@ -30,7 +30,7 @@ using Yarhl.Media.Text;
 
 namespace Pleinair
 {
-    public class Command
+    public class Command_D1
     {
         public static void ExportDat(string name, string path, string outFile)
         {
@@ -339,7 +339,9 @@ namespace Pleinair
 
             //4
             Console.WriteLine(@"Exporting " + name + @"...");
-            if (!Directory.Exists(Path.GetFileNameWithoutExtension(path))) Directory.CreateDirectory(Path.GetFileNameWithoutExtension(path) ?? throw new Exception("That's not supossed to throw a exception lol, please make a issue if you read this line."));
+            if (!Directory.Exists(Path.GetFileNameWithoutExtension(path))) 
+                Directory.CreateDirectory(Path.GetFileNameWithoutExtension(path) 
+                    ?? throw new Exception("That's not supossed to throw a exception lol, please make a issue if you read this line."));
 
             foreach (var child in Navigator.IterateNodes(nodoContainer))
             {

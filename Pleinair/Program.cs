@@ -17,8 +17,10 @@
 //
 using System;
 using System.IO;
+using Pleinair.Containers.PS_FS_V1;
 using Pleinair.Exceptions;
-using static Pleinair.Command;
+using Yarhl.FileSystem;
+using static Pleinair.Command_D1;
 
 namespace Pleinair
 {
@@ -35,39 +37,73 @@ namespace Pleinair
                 ShowInfo();
                 return;
             }
-            if(args.Length == 2 && string.IsNullOrWhiteSpace(args[0]) && 
-               (!File.Exists(args[0]) || 
-                (Path.GetExtension(args[0])?.ToUpper() == ".FAD"  && !Directory.Exists(args[0])))) throw new FileDontExist();
-            var extension = Path.GetExtension(args[0])?.ToUpper();
-            var originalFile = args.Length == 1
-                ? Path.GetFileNameWithoutExtension(args[0])
-                : Path.GetDirectoryName(args[1]) + Path.DirectorySeparatorChar +  Path.GetFileNameWithoutExtension(args[1]);
-            switch (extension)
+
+            if(args.Length == 3 && string.IsNullOrWhiteSpace(args[1]) && (!File.Exists(args[1]) || (Path.GetExtension(args[1])?.ToUpper() == ".FAD"  && !Directory.Exists(args[1]))))
+                throw new FileDontExist();
+
+            switch (args[0].ToUpper())
             {
-                case ".DAT":
-                case ".EXE":
-                case ".FAD":
-                    Export(extension, args[0]);
-                    break;
-                case ".PO":
-                    if (File.Exists(originalFile + ".DAT")) extension = ".DAT";
-                    else if(File.Exists(originalFile + ".exe")) extension = ".exe";
-                    else throw new FileDontExist();
-                    Import(extension, args[0], originalFile);
-                    break;
-                default:
-                    if (Directory.Exists(args[0]))
+                case "D1":
+                    var extension = Path.GetExtension(args[1])?.ToUpper();
+                    var originalFile = args.Length == 2
+                        ? Path.GetFileNameWithoutExtension(args[1])
+                        : Path.GetDirectoryName(args[2]) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(args[2]);
+
+                    switch (extension)
                     {
-                        if (File.Exists(originalFile + ".FAD")) extension = ".FAD";
-                        else throw new FileDontExist();
-                        Import(extension, args[0], originalFile);
+                        case ".DAT":
+                        case ".EXE":
+                        case ".FAD":
+                            Export_D1(extension, args[1]);
+                            break;
+                        case ".PO":
+                            if (File.Exists(originalFile + ".DAT")) extension = ".DAT";
+                            else if (File.Exists(originalFile + ".exe")) extension = ".exe";
+                            else throw new FileDontExist();
+                            Import_D1(extension, args[1], originalFile);
+                            break;
+                        default:
+                            if (Directory.Exists(args[0]))
+                            {
+                                if (File.Exists(originalFile + ".FAD")) extension = ".FAD";
+                                else throw new FileDontExist();
+                                Import_D1(extension, args[1], originalFile);
+                            }
+                            else throw new FileNotSupported();
+                            break;
                     }
-                    else throw new FileNotSupported();
+                    break;
+                case "D1C":
+                    // get the file attributes for file or directory
+                    var attr = File.GetAttributes(args[1]);
+
+                    if (attr.HasFlag(FileAttributes.Directory))
+                    {
+                        var generate = new Directory2PS_FS_V1(args[1]);
+                        generate.GenerateContainer();
+                        var node = NodeFactory.FromMemory("test");
+                        var file = Path.GetFileName(args[1]);
+                        node.Transform(generate).Transform(new PS_FS_V12BinaryFormat()).Stream.WriteTo(
+                            file+"_new");
+                    }
+                    else
+                    {
+                        var node = NodeFactory.FromFile(args[1]);
+                        node.Transform(new Binary2PS_FS_V1()).Transform(new PS_FS_V12Container());
+                        var dir = Path.GetFileNameWithoutExtension(args[1]);
+                        if (!Directory.Exists(dir))
+                            Directory.CreateDirectory(dir);
+
+                        foreach (var child in node.Children)
+                        {
+                            child.Stream.WriteTo($"{dir}{Path.DirectorySeparatorChar}{child.Name}");
+                        }
+                    }
                     break;
             }
         }
 
-        private static void Import(string extension, string locationPo, string locationOr)
+        private static void Import_D1(string extension, string locationPo, string locationOr)
         {
             switch (extension)
             {
@@ -82,7 +118,7 @@ namespace Pleinair
                     break;
             }
         }
-        private static void Export(string extension, string location)
+        private static void Export_D1(string extension, string location)
         {
             switch (extension)
             {
@@ -100,25 +136,40 @@ namespace Pleinair
                     break;
             }
         }
+
+        private static void ManualExport(string type, string path)
+        {
+            switch (type.ToUpper())
+            {
+                case "D1C":
+
+                    break;
+            }
+        }
         
         private static void ShowInfo()
         {
-            Console.WriteLine(@"Usage: Pleinar ""File1"" ""File2""");
+            Console.WriteLine(@"Usage: Pleinar ""game"" ""File1"" ""File2""");
+
+            Console.WriteLine("Disgaea 1 PC");
 
             Console.WriteLine(@"DAT Files");
-            Console.WriteLine(@"Export TALK.DAT to Po: Pleinair ""TALK.DAT""");
-            Console.WriteLine(@"Import Po to TALK.DAT: Pleinair ""TALK.po""");
-            Console.WriteLine(@"Import Po to TALK.DAT with custom location: Pleinair ""TALK.po"" ""folder/TALK.DAT""");
+            Console.WriteLine(@"Export TALK.DAT to Po: Pleinair D1 ""TALK.DAT""");
+            Console.WriteLine(@"Import Po to TALK.DAT: Pleinair D1 ""TALK.po""");
+            Console.WriteLine(@"Import Po to TALK.DAT with custom location: Pleinair D1 ""TALK.po"" ""folder/TALK.DAT""");
 
             Console.WriteLine(@"Executable");
-            Console.WriteLine(@"Dump the dis1_st.exe's strings to Po: Pleinair ""dis1_st.exe""");
-            Console.WriteLine(@"Import the Po to dis1_st.exe: Pleinair ""dis1_st.po""");
-            Console.WriteLine(@"Import the Po to dis1_st.exe with custom location: Pleinair ""dis1_st.po"" ""folder/dis1_st.exe""");
+            Console.WriteLine(@"Dump the dis1_st.exe's strings to Po: Pleinair D1 ""dis1_st.exe""");
+            Console.WriteLine(@"Import the Po to dis1_st.exe: Pleinair D1 ""dis1_st.po""");
+            Console.WriteLine(@"Import the Po to dis1_st.exe with custom location: Pleinair D1 ""dis1_st.po"" ""folder/dis1_st.exe""");
 
             Console.WriteLine(@"FAD Files");
-            Console.WriteLine(@"Export Fad file: Pleinair ""ANMDAT.FAD""");
-            Console.WriteLine(@"Import Fad file: Pleinair ""ANMDAT""");
-            Console.WriteLine(@"Import Fad file with custom location: Pleinair ""ANMDAT"" ""folder/ANMDAT.FAD"" ");
+            Console.WriteLine(@"Export Fad file: Pleinair D1 ""ANMDAT.FAD""");
+            Console.WriteLine(@"Import Fad file: Pleinair D1 ""ANMDAT""");
+            Console.WriteLine(@"Import Fad file with custom location: Pleinair D1 ""ANMDAT"" ""folder/ANMDAT.FAD"" ");
+
+            Console.WriteLine("Disgaea 1 Complete (Nintendo Switch)");
+
         }
     }
 }
