@@ -19,8 +19,11 @@ using System;
 using System.IO;
 using Pleinair.Containers.PS_FS_V1;
 using Pleinair.Exceptions;
+using Pleinair.Text.DAT.TALK;
+using Yarhl.FileFormat;
 using Yarhl.FileSystem;
-using static Pleinair.Command_D1;
+using Yarhl.Media.Text;
+using static Pleinair.D1PcCommands;
 
 namespace Pleinair
 {
@@ -29,8 +32,8 @@ namespace Pleinair
 
         static void Main(string[] args)
         {
-            Console.WriteLine(@"Pleinair - A disgaea toolkit for fantranslations by Darkmet98. Version: 1.0");
-            Console.WriteLine(@"Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.");
+            Console.WriteLine(@"Pleinair - A disgaea toolkit for fantranslations by Darkmet98. Version: 1.1\n");
+            Console.WriteLine(@"Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.\n");
             Console.WriteLine(@"This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
@@ -57,8 +60,11 @@ namespace Pleinair
                             Export_D1(extension, args[1]);
                             break;
                         case ".PO":
-                            if (File.Exists(originalFile + ".DAT")) extension = ".DAT";
-                            else if (File.Exists(originalFile + ".exe")) extension = ".exe";
+                            if (File.Exists(originalFile + ".DAT"))
+                                extension = ".DAT";
+                            else if (File.Exists(originalFile + ".exe"))
+                                extension = ".exe";
+
                             else throw new FileDontExist();
                             Import_D1(extension, args[1], originalFile);
                             break;
@@ -74,8 +80,10 @@ namespace Pleinair
                     }
                     break;
                 case "D1C":
+                    var node = NodeFactory.FromFile(args[1]);
+                    node.Transform(new Binary2Talk()).Transform(new Talk2Po()).Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(args[1]+".po");
                     // get the file attributes for file or directory
-                    var attr = File.GetAttributes(args[1]);
+                    /*var attr = File.GetAttributes(args[1]);
 
                     if (attr.HasFlag(FileAttributes.Directory))
                     {
@@ -98,7 +106,7 @@ namespace Pleinair
                         {
                             child.Stream.WriteTo($"{dir}{Path.DirectorySeparatorChar}{child.Name}");
                         }
-                    }
+                    }*/
                     break;
             }
         }
@@ -137,39 +145,32 @@ namespace Pleinair
             }
         }
 
-        private static void ManualExport(string type, string path)
-        {
-            switch (type.ToUpper())
-            {
-                case "D1C":
-
-                    break;
-            }
-        }
-        
         private static void ShowInfo()
         {
             Console.WriteLine(@"Usage: Pleinar ""game"" ""File1"" ""File2""");
 
-            Console.WriteLine("Disgaea 1 PC");
+            Console.WriteLine("Disgaea 1 PC\n");
 
             Console.WriteLine(@"DAT Files");
             Console.WriteLine(@"Export TALK.DAT to Po: Pleinair D1 ""TALK.DAT""");
             Console.WriteLine(@"Import Po to TALK.DAT: Pleinair D1 ""TALK.po""");
             Console.WriteLine(@"Import Po to TALK.DAT with custom location: Pleinair D1 ""TALK.po"" ""folder/TALK.DAT""");
 
-            Console.WriteLine(@"Executable");
+            Console.WriteLine("\nExecutable");
             Console.WriteLine(@"Dump the dis1_st.exe's strings to Po: Pleinair D1 ""dis1_st.exe""");
             Console.WriteLine(@"Import the Po to dis1_st.exe: Pleinair D1 ""dis1_st.po""");
             Console.WriteLine(@"Import the Po to dis1_st.exe with custom location: Pleinair D1 ""dis1_st.po"" ""folder/dis1_st.exe""");
 
-            Console.WriteLine(@"FAD Files");
+            Console.WriteLine("\nFAD Files");
             Console.WriteLine(@"Export Fad file: Pleinair D1 ""ANMDAT.FAD""");
             Console.WriteLine(@"Import Fad file: Pleinair D1 ""ANMDAT""");
-            Console.WriteLine(@"Import Fad file with custom location: Pleinair D1 ""ANMDAT"" ""folder/ANMDAT.FAD"" ");
+            Console.WriteLine(@"Import Fad file with custom location: Pleinair D1 ""ANMDAT"" ""folder/ANMDAT.FAD""");
 
-            Console.WriteLine("Disgaea 1 Complete (Nintendo Switch)");
+            Console.WriteLine("\nDisgaea 1 Complete (Nintendo Switch)");
 
+            Console.WriteLine(@"\nSUBDATA/DATA Files");
+            Console.WriteLine(@"Export: Pleinair D1C ""SUBDATA.DAT""");
+            Console.WriteLine(@"Import: Pleinair D1C ""SUBDATA""");
         }
     }
 }

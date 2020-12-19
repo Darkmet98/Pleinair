@@ -177,7 +177,8 @@ namespace Pleinair.TALKDAT
                         case 0x01:
                             Texto += sb.Append($"{{{bytes:X2}") + "}";
                             bytes = reader.ReadByte();
-                            if(bytes == 0x81 || bytes == 0x82 || bytes == 0x83) isbytes = false;
+                            if(bytes == 0x81 || bytes == 0x82 || bytes == 0x83)
+                                isbytes = false;
                             reader.Stream.Position = reader.Stream.Position - 1;
                             break;
                         case 0x02:

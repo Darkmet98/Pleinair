@@ -2,7 +2,7 @@
   "profiles": {
     "Pleinair": {
       "commandName": "Project",
-      "commandLineArgs": "D1C SUBDATA"
+      "commandLineArgs": "D1C TALK.DAT"
     }
   }
 }

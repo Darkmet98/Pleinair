@@ -19,6 +19,7 @@
 using Pleinair.TALKDAT;
 using System;
 using System.Collections.Generic;
+using Pleinair.Text.DAT.SCRIPT;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 using Yarhl.Media.Text;

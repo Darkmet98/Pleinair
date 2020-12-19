@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2019 Pedro Garau Martínez
+﻿// Copyright (C) 2020 Pedro Garau Martínez
 //
 // This file is part of Pleinair.
 //
@@ -20,16 +20,16 @@ using System.Text;
 using Yarhl.FileFormat;
 using Yarhl.IO;
 
-namespace Pleinair.SCRIPT.DAT
+namespace Pleinair.Text.DAT.SCRIPT
 {
-    class BinaryFormat2Script : IConverter<BinaryFormat, SCRIPT>
+    class BinaryFormat2Script : IConverter<BinaryFormat, Pleinair.SCRIPT.DAT.SCRIPT>
     {
 
-        SCRIPT result;
+        Pleinair.SCRIPT.DAT.SCRIPT result;
         DataReader Reader;
-        public SCRIPT Convert(BinaryFormat source)
+        public Pleinair.SCRIPT.DAT.SCRIPT Convert(BinaryFormat source)
         {
-            result = new SCRIPT();
+            result = new Pleinair.SCRIPT.DAT.SCRIPT();
 
             Reader = new DataReader(source.Stream)
             {
@@ -58,7 +58,7 @@ namespace Pleinair.SCRIPT.DAT
             }
 
             //Only for debug purposes
-            DumpBlocks();
+            //DumpBlocks();
 
 
             return result;
