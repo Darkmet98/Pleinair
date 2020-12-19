@@ -1,4 +1,4 @@
-﻿// Copyright (C) 2019 Pedro Garau Martínez
+﻿// Copyright (C) 2020 Pedro Garau Martínez
 //
 // This file is part of Pleinair.
 //
@@ -32,9 +32,9 @@ namespace Pleinair
 
         static void Main(string[] args)
         {
-            Console.WriteLine(@"Pleinair - A disgaea toolkit for fantranslations by Darkmet98. Version: 1.1\n");
-            Console.WriteLine(@"Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.\n");
-            Console.WriteLine(@"This program is licensed with a GPL V3 license.");
+            Console.WriteLine("Pleinair - A disgaea toolkit for fantranslations by Darkmet98. Version: 1.1\n");
+            Console.WriteLine("Thanks to Pleonex for the Yarhl and Texim libraries, Kaplas80 for porting MapStringLib and Ykcmp algorithm to c# and iltrof for the original Ykcmp compression and decompression.\n");
+            Console.WriteLine("This program is licensed with a GPL V3 license.");
             if (args.Length != 1 && args.Length != 2 && args.Length != 3)
             {
                 ShowInfo();
@@ -81,7 +81,19 @@ namespace Pleinair
                     break;
                 case "D1C":
                     var node = NodeFactory.FromFile(args[1]);
+                    var ori = NodeFactory.FromFile(args[2]);
+                    var converter = new Po2Talk()
+                    {
+                        OriginalFile = ori.GetFormatAs<BinaryFormat>()
+                    };
+                    node.Transform<Po2Binary, BinaryFormat, Po>().Transform(converter).Transform(new Talk2Binary()).Stream.WriteTo(args[2] + "_NEW");
+
+
+                    /*var node = NodeFactory.FromFile(args[1]);
                     node.Transform(new Binary2Talk()).Transform(new Talk2Po()).Transform<Po2Binary, Po, BinaryFormat>().Stream.WriteTo(args[1]+".po");
+                    */
+
+
                     // get the file attributes for file or directory
                     /*var attr = File.GetAttributes(args[1]);
 

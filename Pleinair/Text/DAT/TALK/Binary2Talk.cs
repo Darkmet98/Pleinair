@@ -12,13 +12,13 @@ namespace Pleinair.Text.DAT.TALK
         private DataReader reader;
         private Talk talk;
         public static Encoding SJIS => CodePagesEncodingProvider.Instance.GetEncoding(932);
+        public bool GetText { get; set; } = true;
 
         public Talk Convert(BinaryFormat source)
         {
             reader = new DataReader(source.Stream);
             talk = new Talk();
             ReadContent();
-
 
             return talk;
         }
@@ -31,9 +31,6 @@ namespace Pleinair.Text.DAT.TALK
             // Initialize the arrays
             talk.InitializeArrays();
 
-            // Jump to the first block
-            reader.Stream.Position = 0x08;
-
             // Get the positions 
             DumpPositions();
 
@@ -42,6 +39,9 @@ namespace Pleinair.Text.DAT.TALK
 
             // Dump the blocks
             DumpBlocks();
+
+            if (!GetText)
+                return;
 
             for (int i = 0; i < talk.Count; i++)
             {
@@ -52,11 +52,18 @@ namespace Pleinair.Text.DAT.TALK
 
         private void DumpPositions()
         {
-            var size = (0x20 * talk.Count) + 0x8;
+            // Jump to the first block
+            reader.Stream.Position = 0x08;
+
+            // Calculate the size
+            talk.HeaderSize = (0x20 * talk.Count) + 0x8;
+
+
             for (int i = 0; i < talk.Count; i++)
             {
-                talk.Positions[i] = reader.ReadInt32() + size;
-                reader.Stream.Position += 0x1C;
+                talk.Positions[i] = reader.ReadInt32() + talk.HeaderSize;
+                reader.Stream.Position -= 4;
+                talk.HeaderEntries[i] = reader.ReadBytes(0x20);
             }
         }
 
@@ -110,6 +117,7 @@ namespace Pleinair.Text.DAT.TALK
                             text += ($"{{{bytes:X2}}}");
                             break;
                         case 0x03:
+                            text += ($"{{{bytes:X2}}}");
                             AddEntry(start, i, id, text);
                             text = string.Empty;
                             isText = false;
@@ -167,15 +175,7 @@ namespace Pleinair.Text.DAT.TALK
 
        private string PatchControlCodes(string text)
        {
-           var dic = new Dictionary<string, string>()
-           {
-               {"{00}{01}", "\n"},
-               {"{00}{02}{01}", "[CONFIRMATION0]\n"},
-               {"{02}{01}", "[CONFIRMATION]\n"},
-               {"{14}{01}", "[SELECTION]\n"},
-               {"¥", "♥"}
-           };
-           return dic.Aggregate(text, (current, a) => current.Replace(a.Key, a.Value));
+           return ControlCodeDictionary.Aggregate(text, (current, a) => current.Replace(a.Key, a.Value));
        }
 
        private string NormalizeText(byte[] text)
@@ -184,5 +184,15 @@ namespace Pleinair.Text.DAT.TALK
            result = result.Normalize(NormalizationForm.FormKC);
            return result;
        }
+
+
+       public static Dictionary<string, string> ControlCodeDictionary = new Dictionary<string, string>()
+       {
+           {"{00}{02}{01}", "[CONFIRMATION0]\n"},
+           {"{02}{01}", "[CONFIRMATION]\n"},
+           {"{14}{01}", "[SELECTION]\n"},
+           {"¥", "♥"},
+           {"{00}{01}", "\n"}
+       };
     }
 }

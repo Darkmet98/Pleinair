@@ -6,9 +6,11 @@ namespace Pleinair.Text.DAT.TALK
     public class Talk : Format
     {
         public int Count { get; set; }
+        public int HeaderSize { get; set; }
         public int[] Positions { get; set; }
         public int[] Sizes { get; set; }
         public byte[][] Blocks { get; set; }
+        public byte[][] HeaderEntries { get; set; }
         public List<TalkTextEntry> TextEntries { get; }
 
         public Talk()
@@ -21,6 +23,7 @@ namespace Pleinair.Text.DAT.TALK
             Positions = new int[Count];
             Sizes = new int[Count];
             Blocks = new byte[Count][];
+            HeaderEntries = new byte[Count][];
         }
     }
 

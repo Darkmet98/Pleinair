@@ -56,15 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TextArea.map">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TextVar.map">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Containers\START\" />
   </ItemGroup>
 
