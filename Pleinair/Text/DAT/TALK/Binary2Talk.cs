@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -151,6 +151,7 @@ namespace Pleinair.Text.DAT.TALK
                             {
                                 isText = true;
                                 haveText = true;
+                                isBytes = false;
                                 start = i;
                             }
                             break;
